@@ -1,0 +1,151 @@
+<!-- Overlay -->
+<div class="modal-overlay" (click)="cerrarModal()">
+
+  <!-- Modal (evita que el click se propague al overlay) -->
+  <div class="modal-content" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>💬 Enviar por WhatsApp</h2>
+      <button class="btn-close" (click)="cerrarModal()" aria-label="Cerrar">✕</button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+
+      <!-- Selector de modo -->
+      <div class="section">
+        <label class="section-label">Tipo de mensaje:</label>
+        <div class="modo-selector">
+          <label class="modo-option" [class.active]="modo === 'proveedor'">
+            <input type="radio"
+                   name="modo"
+                   [value]="'proveedor'"
+                   [checked]="modo === 'proveedor'"
+                   (change)="seleccionarModo('proveedor')">
+            <div class="modo-content">
+              <span class="modo-icon">📦</span>
+              <div class="modo-text">
+                <strong>Pedido a proveedor</strong>
+                <small>Sin precios, filtrado por categorías</small>
+              </div>
+            </div>
+          </label>
+
+          <label class="modo-option" [class.active]="modo === 'compartir'">
+            <input type="radio"
+                   name="modo"
+                   [value]="'compartir'"
+                   [checked]="modo === 'compartir'"
+                   (change)="seleccionarModo('compartir')">
+            <div class="modo-content">
+              <span class="modo-icon">📤</span>
+              <div class="modo-text">
+                <strong>Resumen para compartir</strong>
+                <small>Con platos y precios</small>
+              </div>
+            </div>
+          </label>
+
+          <label class="modo-option" [class.active]="modo === 'rapida'">
+            <input type="radio"
+                   name="modo"
+                   [value]="'rapida'"
+                   [checked]="modo === 'rapida'"
+                   (change)="seleccionarModo('rapida')">
+            <div class="modo-content">
+              <span class="modo-icon">⚡</span>
+              <div class="modo-text">
+                <strong>Lista rápida</strong>
+                <small>Con categorías y precios</small>
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Solo "Proveedor": Categorías -->
+      <div class="section" *ngIf="modo === 'proveedor'">
+        <div class="section-header-inline">
+          <label class="section-label">
+            Categorías a incluir ({{ contarCategoriasSeleccionadas() }}/{{ categorias.length }})
+          </label>
+          <button type="button"
+                  class="btn-toggle-all"
+                  (click)="toggleTodasCategorias()">
+            {{ todasSeleccionadas ? 'Desmarcar todas' : 'Marcar todas' }}
+          </button>
+        </div>
+
+        <div class="categorias-grid">
+          <label class="categoria-check"
+                 *ngFor="let cat of categorias">
+            <input type="checkbox"
+                   [(ngModel)]="cat.seleccionada">
+            <span class="categoria-icon">{{ cat.icono }}</span>
+            <span class="categoria-nombre">{{ cat.nombre }}</span>
+            <span class="categoria-count">({{ cat.itemsCount }})</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Solo "Compartir": Opciones -->
+      <div class="section" *ngIf="modo === 'compartir'">
+        <label class="section-label">Incluir en el mensaje:</label>
+        <div class="opciones-check">
+          <label class="opcion-toggle">
+            <input type="checkbox" [(ngModel)]="incluirPlatos">
+            <span>📌 Nombres de los platos</span>
+          </label>
+          <label class="opcion-toggle">
+            <input type="checkbox" [(ngModel)]="incluirPrecios">
+            <span>💰 Precios estimados</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Solo "Proveedor": Datos del cliente -->
+      <div class="section" *ngIf="modo === 'proveedor'">
+        <label class="section-label">Datos opcionales (aparecerán en el mensaje):</label>
+
+        <div class="campo">
+          <label>👤 Nombre del cliente</label>
+          <input type="text"
+                 [(ngModel)]="nombreCliente"
+                 placeholder="Ej. Juan Pérez"
+                 maxlength="60">
+        </div>
+
+        <div class="campo">
+          <label>📍 Dirección de entrega</label>
+          <input type="text"
+                 [(ngModel)]="direccionCliente"
+                 placeholder="Ej. Av. Los Álamos 123, Miraflores"
+                 maxlength="120">
+        </div>
+      </div>
+
+      <!-- Nota informativa -->
+      <div class="info-box">
+        ℹ️ Al hacer clic en <strong>Enviar a WhatsApp</strong>, se abrirá la app y podrás elegir el destinatario.
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button type="button"
+              class="btn-cancel"
+              (click)="cerrarModal()">
+        Cancelar
+      </button>
+      <button type="button"
+              class="btn-send"
+              [disabled]="!puedeEnviar"
+              (click)="enviar()">
+        💬 Enviar a WhatsApp
+      </button>
+    </div>
+
+  </div>
+</div>
