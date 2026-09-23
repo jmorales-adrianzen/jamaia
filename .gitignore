@@ -1,4 +1,6 @@
-# Angular specific
+# ============================================================
+# ANGULAR
+# ============================================================
 /dist/
 /out-tsc/
 /tmp/
@@ -7,22 +9,66 @@
 /.angular/
 .angular/
 
-# Node modules and dependency files
+# ============================================================
+# NODE
+# ============================================================
 /node_modules/
-/package-lock.json
 /yarn.lock
+# ⚠️ NO ignorar /package-lock.json: se necesita para reproducibilidad
 
-# Environment files
-/.env
+# ============================================================
+# ENVIRONMENT Y SECRETOS
+# ============================================================
+# Archivos de secretos locales (NUNCA subir)
+.env
+.env.local
+.env.*.local
 
-# Angular CLI and build artefacts
+# ⚠️ IMPORTANTE: src/environments/environment.ts SÍ se sube
+# porque la anon key de Supabase es pública por diseño.
+# Si algún día usas service_role key, muévela a .env
+
+# ============================================================
+# SUPABASE CLI
+# ============================================================
+.supabase/
+supabase/.temp/
+supabase/.branches/
+
+# ============================================================
+# ANGULAR CLI
+# ============================================================
 /.angular-cli.json
 /.ng/
 
-# TypeScript cache
+# ============================================================
+# TYPESCRIPT
+# ============================================================
 *.tsbuildinfo
 
-# Logs
+# ============================================================
+# LOGS
+# ============================================================
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+
+# ============================================================
+# EDITORES / SISTEMA
+# ============================================================
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# ============================================================
+# AZURE (para tu deploy en Static Web Apps)
+# ============================================================
+# El workflow se genera automáticamente, no necesitas ignorarlo
+# pero a veces hay carpetas temporales:
+/.azure/

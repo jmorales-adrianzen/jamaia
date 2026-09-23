@@ -1,3 +1,6 @@
+/* ============================================================
+   CONTENEDOR GENERAL
+   ============================================================ */
 .container { 
   max-width: 800px; 
   background: #ffffff; 
@@ -192,57 +195,268 @@ select {
   outline: none; 
 }
 
-/* Despensa / Checkboxes Móviles */
-.select-all-box { 
-  background: #ebf8ff; 
-  padding: 10px 12px; 
-  border-radius: 8px; 
-  font-size: 0.9rem; 
-  font-weight: 700; 
-  color: #2b6cb0; 
-  border: 1px solid #bee3f8; 
-  margin-top: 12px; 
-  display: flex; 
-  align-items: center; 
-  gap: 8px; 
-  cursor: pointer; 
+/* ============================================================
+   DESPENSA — TOOLBAR (2 filas, 3 elementos)
+   ============================================================ */
+.despensa-toolbar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-top: 12px;
+  margin-bottom: 16px;
 }
 
-.select-all-box input { 
-  width: 18px; 
-  height: 18px; 
-  accent-color: #3182ce; 
-  cursor: pointer; 
+.despensa-toolbar .select-all-box {
+  margin: 0;
+  width: 100%;
+  justify-content: center;
 }
 
-.checkbox-grid { 
-  display: grid; 
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
-  gap: 8px; 
-  margin-top: 10px; 
+.btn-toggle-categorias {
+  padding: 10px 14px;
+  background: #faf5ff;
+  color: #6b46c1;
+  border: 1px solid #e9d8fd;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  width: 100%;
+  transition: background 0.15s, transform 0.1s;
 }
 
-.checkbox-card { 
-  background: #f7fafc; 
-  padding: 10px 12px; 
-  border-radius: 8px; 
-  font-size: 0.88rem; 
-  cursor: pointer; 
-  display: flex; 
-  align-items: center; 
-  gap: 8px; 
-  border: 1px solid #e2e8f0; 
-  user-select: none; 
+.btn-toggle-categorias:hover {
+  background: #f3e8ff;
 }
 
-.checkbox-card input { 
-  width: 18px; 
-  height: 18px; 
-  accent-color: #3182ce; 
-  cursor: pointer; 
+.btn-toggle-categorias:active {
+  transform: scale(0.97);
 }
 
-/* Botón de Acción Principal */
+.despensa-toolbar .filtro-despensa {
+  grid-column: 1 / -1;
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+  color: #2d3748;
+  transition: border-color 0.2s;
+}
+
+.despensa-toolbar .filtro-despensa:focus {
+  border-color: #6b46c1;
+  box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.1);
+}
+
+/* Despensa / Checkbox "Marcar todos" */
+.select-all-box {
+  background: #ebf8ff;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #2b6cb0;
+  border: 1px solid #bee3f8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.select-all-box input {
+  width: 18px;
+  height: 18px;
+  accent-color: #3182ce;
+  cursor: pointer;
+}
+
+/* ============================================================
+   DESPENSA — CONTENEDOR
+   ============================================================ */
+.despensa-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fafbfc;
+}
+
+.despensa-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.despensa-container::-webkit-scrollbar-track {
+  background: #f7fafc;
+  border-radius: 4px;
+}
+
+.despensa-container::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+/* ============================================================
+   DESPENSA — BLOQUE DE CATEGORÍA
+   ============================================================ */
+.categoria-bloque {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.categoria-bloque:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* ============================================================
+   HEADER DE CATEGORÍA — estilos reforzados
+   ============================================================ */
+.categoria-header {
+  display: grid !important;
+  grid-template-columns: 20px 32px minmax(0, 1fr) auto 40px !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: linear-gradient(90deg, #f7fafc 0%, #edf2f7 100%) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  padding: 12px 16px !important;
+  min-height: 52px !important;
+  height: auto !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+  position: relative !important;
+}
+
+.categoria-header > .cat-arrow {
+  display: inline-block !important;
+  font-size: 11px !important;
+  color: #718096 !important;
+  cursor: pointer !important;
+  text-align: center !important;
+  line-height: 1 !important;
+  height: auto !important;
+  width: auto !important;
+  overflow: visible !important;
+}
+
+.categoria-header > .cat-icon {
+  display: inline-block !important;
+  font-size: 20px !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  height: auto !important;
+  width: auto !important;
+  overflow: visible !important;
+}
+
+.categoria-header > .cat-name {
+  display: inline-block !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #2d3748 !important;
+  cursor: pointer !important;
+  line-height: 1.4 !important;
+  height: auto !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.categoria-header > .cat-count {
+  display: inline-block !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #6b46c1 !important;
+  background: #faf5ff !important;
+  padding: 3px 10px !important;
+  border-radius: 12px !important;
+  white-space: nowrap !important;
+  height: auto !important;
+  line-height: 1.4 !important;
+  justify-self: end !important;
+}
+
+.categoria-header > .cat-check {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: auto !important;
+  width: auto !important;
+}
+
+.categoria-header > .cat-check > input[type="checkbox"] {
+  width: 18px !important;
+  height: 18px !important;
+  cursor: pointer !important;
+  accent-color: #6b46c1 !important;
+  margin: 0 !important;
+  display: block !important;
+}
+
+/* ============================================================
+   DESPENSA — GRID DE CHECKBOXES DENTRO DE CATEGORÍA
+   ============================================================ */
+.categoria-bloque .checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fff;
+}
+
+.categoria-bloque .checkbox-card {
+  background: #f7fafc;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e2e8f0;
+  user-select: none;
+  color: #2d3748;
+  margin: 0;
+  transition: background 0.15s;
+}
+
+.categoria-bloque .checkbox-card:hover {
+  background: #edf2f7;
+}
+
+.categoria-bloque .checkbox-card input {
+  width: 18px;
+  height: 18px;
+  accent-color: #3182ce;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.categoria-bloque .checkbox-card span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   BOTÓN DE ACCIÓN PRINCIPAL
+   ============================================================ */
 .btn-submit { 
   background-color: #38a169; 
   color: white; 
@@ -263,7 +477,9 @@ select {
   background-color: #2f855a; 
 }
 
-/* Botones de Exportación (WhatsApp) */
+/* ============================================================
+   BOTONES DE EXPORTACIÓN (WhatsApp)
+   ============================================================ */
 .export-actions { 
   display: flex; 
   gap: 12px; 
@@ -301,7 +517,9 @@ select {
   background-color: #20ba5a; 
 }
 
-/* Spinner de Carga */
+/* ============================================================
+   SPINNER DE CARGA
+   ============================================================ */
 .spinner-container { 
   display: none; 
   text-align: center; 
@@ -329,7 +547,9 @@ select {
   font-weight: 600; 
 }
 
-/* Resultados */
+/* ============================================================
+   RESULTADOS
+   ============================================================ */
 .result-box { 
   margin-top: 24px; 
   padding: 16px; 
@@ -360,7 +580,9 @@ li {
   font-size: 0.95rem; 
 }
 
-/* --- Guía de Preparación e Insumos por Plato (Con ::ng-deep) --- */
+/* ============================================================
+   GUÍA DE PREPARACIÓN
+   ============================================================ */
 ::ng-deep .prep-box { 
   margin-top: 24px; 
   padding: 16px; 
@@ -369,9 +591,7 @@ li {
   border-radius: 12px; 
 }
 
-/* Contenedor principal del día con línea vertical izquierda */
-::ng-deep .prep-card, 
-::ng-deep .plato-card { 
+::ng-deep .prep-card { 
   background: #ffffff; 
   padding: 20px; 
   border-radius: 14px; 
@@ -381,12 +601,13 @@ li {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04); 
 }
 
-::ng-deep .prep-card:last-child, 
-::ng-deep .plato-card:last-child { 
+::ng-deep .prep-card:last-child { 
   margin-bottom: 0; 
 }
 
-/* Nombre del día de la semana */
+/* ============================================================
+   HEADER DE LA TARJETA
+   ============================================================ */
 ::ng-deep .prep-day { 
   font-weight: 800; 
   color: #dd6b20; 
@@ -403,13 +624,24 @@ li {
   font-weight: 700; 
   color: #1a202c; 
   font-size: 1.15rem; 
-  margin: 0 0 14px 0; 
+  margin: 0 0 4px 0; 
 }
 
-/* Imagen horizontal superior */
-::ng-deep .dish-img, 
-::ng-deep .imagen-plato, 
-::ng-deep .sugerencia-img img { 
+/* 👇 NUEVO: Tiempo estimado de preparación */
+::ng-deep .prep-time {
+  font-size: 0.82rem;
+  color: #718096;
+  font-weight: 500;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ============================================================
+   IMAGEN
+   ============================================================ */
+::ng-deep .dish-img { 
   width: 100%; 
   height: 220px; 
   object-fit: cover; 
@@ -419,82 +651,126 @@ li {
   display: block; 
 }
 
-::ng-deep .imagen-plato-container, 
-::ng-deep .sugerencia-img { 
-  width: 100%; 
-  max-height: 220px; 
-  overflow: hidden; 
-  border-radius: 10px; 
-  margin-bottom: 16px; 
+/* ============================================================
+   SECCIONES CON COLORES DISTINTOS
+   ============================================================ */
+
+/* --- Base común de las secciones --- */
+::ng-deep .prep-section {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin-bottom: 12px;
 }
 
-/* Caja de Insumos Exactos */
-::ng-deep .prep-quantities, 
-::ng-deep .insumos-box { 
-  font-size: 0.92rem; 
-  background-color: #f0f4f8; 
-  color: #2d3748; 
-  padding: 12px 16px; 
-  border-radius: 10px; 
-  margin-bottom: 12px; 
-  border: 1px solid #d9e2ec; 
-  line-height: 1.5; 
+::ng-deep .prep-section:last-child {
+  margin-bottom: 0;
 }
 
-::ng-deep .prep-quantities strong, 
-::ng-deep .insumos-box strong { 
-  color: #102a43; 
+::ng-deep .prep-section strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 
-/* Caja de Tarea Previa con tonos exactos */
-::ng-deep .prep-pre, 
-::ng-deep .alerta-box, 
-::ng-deep .tarea-previa-box { 
-  background-color: #fffaf0; 
-  color: #7b341e; 
-  padding: 12px 16px; 
-  border-radius: 10px; 
-  font-size: 0.92rem; 
-  margin-bottom: 12px; 
-  border: 1px solid #feebc8; 
-  border-left: 4px solid #dd6b20; 
-  line-height: 1.5; 
+::ng-deep .prep-section p {
+  margin: 0;
 }
 
-/* Caja de Pasos de Preparación con perfecta alineación de líneas */
-::ng-deep .prep-desc, 
-::ng-deep .pasos-box { 
-  font-size: 0.92rem; 
-  color: #2d3748; 
-  line-height: 1.6; 
-  background-color: #f8f7fc; 
-  padding: 14px 16px; 
-  border-radius: 10px; 
-  border: 1px solid #ede9fe; 
+/* --- Insumos (azul) --- */
+::ng-deep .prep-section-insumos {
+  background-color: #ebf8ff;
+  border: 1px solid #bee3f8;
+  color: #2c5282;
 }
 
-::ng-deep .prep-desc strong, 
-::ng-deep .pasos-box strong { 
-  color: #2d3748; 
-  font-size: 0.95rem; 
-  display: block; 
-  margin-bottom: 6px; 
+::ng-deep .prep-section-insumos strong {
+  color: #2b6cb0;
 }
 
-::ng-deep .prep-desc ol, 
-::ng-deep .pasos-box ol { 
-  margin: 0; 
-  padding-left: 0; 
-  list-style-position: inside; /* Mantiene el número y el texto alineados limpiamente en bloque */
+/* --- Pasos de Preparación (verde) --- */
+::ng-deep .prep-section-pasos {
+  background-color: #f0fff4;
+  border: 1px solid #c6f6d5;
+  color: #22543d;
 }
 
-::ng-deep .prep-desc li, 
-::ng-deep .pasos-box li { 
-  margin-bottom: 8px; 
-  text-indent: 0; 
+::ng-deep .prep-section-pasos strong {
+  color: #276749;
 }
 
-::ng-deep .prep-desc li:last-child, 
-::ng-deep .pasos-box li:last-child { 
-  margin-bottom: 0; 
+::ng-deep .prep-section-pasos ol {
+  margin: 0;
+  padding-left: 0;
+  list-style-position: inside;
+}
+
+::ng-deep .prep-section-pasos li {
+  margin-bottom: 8px;
+  text-indent: 0;
+  color: #22543d;
+}
+
+::ng-deep .prep-section-pasos li:last-child {
+  margin-bottom: 0;
+}
+
+/* --- Tips (naranja, sin línea lateral) --- */
+::ng-deep .prep-section-tips {
+  background-color: #fffaf0;
+  border: 1px solid #feebc8;
+  color: #7b341e;
+}
+
+::ng-deep .prep-section-tips strong {
+  color: #c05621;
+}
+
+/* --- Acompáñalo con... (morado) --- */
+::ng-deep .prep-section-acomp {
+  background-color: #faf5ff;
+  border: 1px solid #e9d8fd;
+  color: #553c9a;
+}
+
+::ng-deep .prep-section-acomp strong {
+  color: #6b46c1;
+}
+
+::ng-deep .prep-section-acomp ul {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+::ng-deep .prep-section-acomp li {
+  margin-bottom: 4px;
+  color: #553c9a;
+}
+
+::ng-deep .prep-section-acomp li:last-child {
+  margin-bottom: 0;
+}
+
+::ng-deep .prep-section-acomp li b {
+  color: #6b46c1;
+}
+
+/* ============================================================
+   RESPONSIVE — DESPENSA TOOLBAR EN MÓVIL
+   En pantallas pequeñas, los 3 elementos se apilan verticalmente
+   ============================================================ */
+@media (max-width: 599px) {
+  .despensa-toolbar {
+    grid-template-columns: 1fr !important;
+  }
+
+  .despensa-toolbar .select-all-box,
+  .despensa-toolbar .btn-toggle-categorias,
+  .despensa-toolbar .filtro-despensa {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+  }
 }

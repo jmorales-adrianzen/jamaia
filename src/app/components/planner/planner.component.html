@@ -1,6 +1,6 @@
 <div class="container">
   <h1>Jama con AI - ¿Qué vas a jamear hoy o en la semana?</h1>
-  
+
   <!-- Selección de País -->
   <div class="country-group">
     <label for="country-select" class="country-label">
@@ -8,8 +8,9 @@
       <span>País:</span>
     </label>
     <select id="selectPais" class="country-select" [(ngModel)]="paisActual" (change)="cambiarPais()">
-      <option value="PE">🇵🇪 Perú (S/ PEN)</option>
-      <option value="AR">🇦🇷 Argentina ($ ARS)</option>
+      <option *ngFor="let p of paises" [value]="p.codigo_iso">
+        {{ p.codigo_iso === 'PE' ? '🇵🇪' : '🇦🇷' }} {{ p.nombre }}
+      </option>
     </select>
   </div>
 
@@ -23,72 +24,117 @@
     </div>
   </div>
 
-  <!-- Menú Semanal con Botón Aleatorio -->
+  <!-- Menú Semanal -->
   <div class="section-header">
     <h2>📅 Menú Semanal</h2>
     <button class="btn-random" (click)="seleccionarAleatorio()">🎲 Seleccionar Platos Aleatoriamente</button>
   </div>
   <div class="days-grid">
-    <div class="day-box"><label>Lunes:</label><select id="lunes" class="select-plato" [(ngModel)]="menuSemanal.lunes"><option *ngFor="let p of platosDisponibles" [value]="p.key">{{ p.nombre }}</option></select></div>
-    <div class="day-box"><label>Martes:</label><select id="martes" class="select-plato" [(ngModel)]="menuSemanal.martes"><option *ngFor="let p of platosDisponibles" [value]="p.key">{{ p.nombre }}</option></select></div>
-    <div class="day-box"><label>Miércoles:</label><select id="miercoles" class="select-plato" [(ngModel)]="menuSemanal.miercoles"><option *ngFor="let p of platosDisponibles" [value]="p.key">{{ p.nombre }}</option></select></div>
-    <div class="day-box"><label>Jueves:</label><select id="jueves" class="select-plato" [(ngModel)]="menuSemanal.jueves"><option *ngFor="let p of platosDisponibles" [value]="p.key">{{ p.nombre }}</option></select></div>
-    <div class="day-box"><label>Viernes:</label><select id="viernes" class="select-plato" [(ngModel)]="menuSemanal.viernes"><option *ngFor="let p of platosDisponibles" [value]="p.key">{{ p.nombre }}</option></select></div>
-    <div class="day-box"><label>Sábado:</label><select id="sabado" class="select-plato" [(ngModel)]="menuSemanal.sabado"><option *ngFor="let p of platosDisponibles" [value]="p.key">{{ p.nombre }}</option></select></div>
-    <div class="day-box"><label>Domingo:</label><select id="domingo" class="select-plato" [(ngModel)]="menuSemanal.domingo"><option *ngFor="let p of platosDisponibles" [value]="p.key">{{ p.nombre }}</option></select></div>
+    <div class="day-box" *ngFor="let dia of diasKeys">
+      <label>{{ dia | titlecase }}:</label>
+      <select [id]="dia" class="select-plato" [(ngModel)]="menuSemanal[dia]">
+        <option [ngValue]="null">— Ninguno / Descanso —</option>
+        <option *ngFor="let p of platosDisponibles" [ngValue]="p.platillo_id">
+          {{ p.nombre }}
+        </option>
+      </select>
+    </div>
   </div>
 
   <!-- Despensa -->
   <h2>🥫 ¿Qué ingredientes YA tienes en casa?</h2>
-  <label class="select-all-box">
-    <input type="checkbox" id="selectAllCheckbox" [(ngModel)]="selectAllChecked" (change)="toggleSelectAll()">
-    <span>☑️ Marcar / Desmarcar todos</span>
-  </label>
 
-  <div class="checkbox-grid">
-    <label class="checkbox-card"><input type="checkbox" class="despensa" [(ngModel)]="despensa['arroz']" (change)="actualizarEstadoSelectAll()"> Arroz</label>
-    <label class="checkbox-card"><input type="checkbox" class="despensa" [(ngModel)]="despensa['aceite']" (change)="actualizarEstadoSelectAll()"> Aceite</label>
-    <label class="checkbox-card"><input type="checkbox" class="despensa" [(ngModel)]="despensa['sal']" (change)="actualizarEstadoSelectAll()"> Sal</label>
-    <label class="checkbox-card"><input type="checkbox" class="despensa" [(ngModel)]="despensa['pimienta']" (change)="actualizarEstadoSelectAll()"> Pimienta</label>
-    <label class="checkbox-card"><input type="checkbox" class="despensa" [(ngModel)]="despensa['comino']" (change)="actualizarEstadoSelectAll()"> Comino</label>
-    <label class="checkbox-card"><input type="checkbox" class="despensa" [(ngModel)]="despensa['azucar']" (change)="actualizarEstadoSelectAll()"> Azúcar</label>
-    <label class="checkbox-card"><input type="checkbox" class="despensa" [(ngModel)]="despensa['fideos']" (change)="actualizarEstadoSelectAll()"> Fideos</label>
-    <label class="checkbox-card"><input type="checkbox" class="despensa" [(ngModel)]="despensa['atun']" (change)="actualizarEstadoSelectAll()"> Atún en lata</label>
-    <label class="checkbox-card"><input type="checkbox" class="despensa" [(ngModel)]="despensa['lenteja_id']" (change)="actualizarEstadoSelectAll()"> Lentejas</label>
-    <label class="checkbox-card"><input type="checkbox" class="despensa" [(ngModel)]="despensa['frejol_id']" (change)="actualizarEstadoSelectAll()"> Fréjol / Porotos</label>
-    <label class="checkbox-card"><input type="checkbox" class="despensa" [(ngModel)]="despensa['hamburguesa']" (change)="actualizarEstadoSelectAll()"> Hamburguesas</label>
-    <label class="checkbox-card"><input type="checkbox" class="despensa" [(ngModel)]="despensa['nuggets']" (change)="actualizarEstadoSelectAll()"> Nuggets</label>
-    <label class="checkbox-card"><input type="checkbox" class="despensa" [(ngModel)]="despensa['leche']" (change)="actualizarEstadoSelectAll()"> Leche</label>
-    <label class="checkbox-card"><input type="checkbox" class="despensa" [(ngModel)]="despensa['mantequilla']" (change)="actualizarEstadoSelectAll()"> Mantequilla / Manteca</label>
-    <label class="checkbox-card"><input type="checkbox" class="despensa" [(ngModel)]="despensa['galleta_soda']" (change)="actualizarEstadoSelectAll()"> Galleta Soda / Tostadas</label>
+  <div class="despensa-toolbar">
+    <label class="select-all-box">
+      <input type="checkbox" id="selectAllCheckbox" [(ngModel)]="selectAllChecked" (change)="toggleSelectAll()">
+      <span>☑️ Marcar / Desmarcar todos</span>
+    </label>
+
+    <button type="button"
+            class="btn-toggle-categorias"
+            (click)="toggleExpandirTodas()">
+      {{ todasExpandidas ? '🔼 Colapsar todo' : '🔽 Expandir todo' }}
+    </button>
+
+    <input type="text"
+           class="filtro-despensa"
+           placeholder="🔍 Buscar ingrediente..."
+           [(ngModel)]="filtroDespensa"
+           (ngModelChange)="onFiltroChange()">
+  </div>
+
+  <div class="despensa-container">
+    <div class="categoria-bloque" *ngFor="let cat of categoriasDespensa">
+
+      <div class="categoria-header">
+        <span class="cat-arrow" (click)="toggleCategoria(cat)">
+          {{ cat.expandida ? '▼' : '▶' }}
+        </span>
+
+        <span class="cat-icon">{{ cat.icono }}</span>
+
+        <span class="cat-name" (click)="toggleCategoria(cat)">
+          {{ cat.nombre }}
+        </span>
+
+        <span class="cat-count">
+          {{ contarMarcadosCategoria(cat) }} / {{ cat.items.length }}
+        </span>
+
+        <label class="cat-check">
+          <input type="checkbox"
+                 [checked]="contarMarcadosCategoria(cat) === cat.items.length && cat.items.length > 0"
+                 (change)="toggleCategoriaCompleta(cat, $event)">
+        </label>
+      </div>
+
+      <div class="checkbox-grid" *ngIf="cat.expandida">
+        <label class="checkbox-card"
+               *ngFor="let ing of cat.items"
+               [style.display]="filtroDespensa && !ing.nombre.toLowerCase().includes(filtroDespensa.toLowerCase()) ? 'none' : 'flex'">
+          <input type="checkbox"
+                 class="despensa"
+                 [(ngModel)]="despensa[ing.id]"
+                 (change)="actualizarEstadoSelectAll()">
+          <span>{{ ing.nombre }}</span>
+        </label>
+      </div>
+
+    </div>
   </div>
 
   <button class="btn-submit" (click)="ejecutarGeneracion()">Generar Lista y Sugerencias</button>
 
-  <!-- Spinner de Carga -->
   <div id="spinner" class="spinner-container" [style.display]="cargando ? 'block' : 'none'">
     <div class="spinner"></div>
     <div class="spinner-text">Calculando ingredientes y organizando recetas...</div>
   </div>
 
-  <!-- Área Exportable (Lista de Compras + Sugerencias) -->
   <div id="area-impresion">
-    <!-- Lista de Compras -->
     <div id="resultado" class="result-box" [style.display]="mostrarResultado ? 'block' : 'none'">
       <h2 style="margin-top:0; border:none; color:#6b46c1;">🛒 Lista de Compras Semanal</h2>
       <div id="lista-ingredientes" [innerHTML]="htmlCompras"></div>
       <div class="cost-total">Estimado de Gastos: <span id="costo-total">{{ simboloMoneda }} {{ costoTotalGlobal.toFixed(2) }}</span></div>
     </div>
 
-    <!-- Sugerencias de Preparación -->
     <div id="seccion-sugerencias" class="prep-box" [style.display]="mostrarResultado ? 'block' : 'none'">
       <h2 style="margin-top:0; border:none; color:#c05621;">🍳 Guía de Preparación e Insumos por Plato</h2>
       <div id="lista-sugerencias" [innerHTML]="htmlSugerencias"></div>
     </div>
   </div>
 
-  <!-- Botones para Compartir / Exportar -->
   <div id="seccion-exportar" class="export-actions" [style.display]="mostrarResultado ? 'flex' : 'none'">
-    <button class="btn-export btn-whatsapp" (click)="enviarWhatsApp()">💬 Enviar por WhatsApp</button>
+    <button class="btn-export btn-whatsapp" (click)="abrirModalWhatsapp()">💬 Enviar por WhatsApp</button>
   </div>
+
+<app-enviar-whatsapp-modal
+  *ngIf="mostrarModalWhatsapp"
+  [compras]="comprasDetalladas"
+  [platos]="platosSeleccionados"
+  [personas]="personas"
+  [pais]="paisSeleccionado?.nombre ?? ''"
+  [simboloMoneda]="simboloMoneda"
+  (cerrar)="cerrarModalWhatsapp()">
+</app-enviar-whatsapp-modal>
+
 </div>
