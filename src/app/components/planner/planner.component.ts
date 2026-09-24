@@ -6,6 +6,7 @@ import { EnviarWhatsappModalComponent } from 'src/app/components/enviar-whatsapp
 import { ItemCompra } from 'src/app/models/plato.model';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
 import { MenuService } from 'src/app/services/menu.service';
+import { RouterModule } from '@angular/router';
 import {
   PlatoCompleto,
   Ubicacion,
@@ -19,7 +20,7 @@ import {
 @Component({
   selector: 'app-planner',
   standalone: true,
-  imports: [CommonModule, FormsModule, EnviarWhatsappModalComponent],
+  imports: [CommonModule, FormsModule, RouterModule, EnviarWhatsappModalComponent],
   templateUrl: './planner.component.html',
   styleUrls: ['./planner.component.css']
 })

@@ -1,4 +1,8 @@
 /* ============================================================
+   MODAL WHATSAPP — Refactorizado con Jama Design System
+   ============================================================ */
+
+/* ============================================================
    OVERLAY
    ============================================================ */
 .modal-overlay {
@@ -7,14 +11,15 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(26, 26, 26, 0.6);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  padding: 16px;
+  padding: var(--jama-space-4);
   box-sizing: border-box;
-  animation: fadeIn 0.15s ease-out;
+  animation: fadeIn 0.2s ease-out;
 }
 
 @keyframes fadeIn {
@@ -26,15 +31,15 @@
    CONTENIDO DEL MODAL
    ============================================================ */
 .modal-content {
-  background: #fff;
-  border-radius: 16px;
+  background: var(--jama-surface);
+  border-radius: var(--jama-radius-xl);
   width: 100%;
   max-width: 560px;
   max-height: 92vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.2s ease-out;
+  box-shadow: var(--jama-shadow-xl);
+  animation: slideUp 0.25s ease-out;
   overflow: hidden;
 }
 
@@ -44,23 +49,24 @@
 }
 
 /* ============================================================
-   HEADER
+   HEADER DEL MODAL
    ============================================================ */
 .modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid #edf2f7;
-  background: #f7fafc;
+  padding: var(--jama-space-4) var(--jama-space-5);
+  border-bottom: 2px solid var(--jama-brand-gold);
+  background: linear-gradient(90deg, var(--jama-brand-green-light) 0%, var(--jama-brand-gold-light) 100%);
   flex-shrink: 0;
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 1.15rem;
-  color: #2d3748;
-  font-weight: 700;
+  font-family: var(--jama-font-display);
+  font-size: var(--jama-text-lg);
+  font-weight: var(--jama-weight-bold);
+  color: var(--jama-brand-green);
   border: none;
   padding: 0;
 }
@@ -68,24 +74,25 @@
 .btn-close {
   background: transparent;
   border: none;
-  font-size: 20px;
-  color: #718096;
+  font-size: var(--jama-text-xl);
+  color: var(--jama-brand-green);
   cursor: pointer;
-  padding: 4px 10px;
-  border-radius: 6px;
-  transition: background 0.15s;
+  padding: var(--jama-space-1) var(--jama-space-3);
+  border-radius: var(--jama-radius-sm);
+  transition: all var(--jama-transition-fast);
+  font-family: var(--jama-font-display);
 }
 
 .btn-close:hover {
-  background: #edf2f7;
-  color: #2d3748;
+  background: var(--jama-brand-green);
+  color: var(--jama-text-inverse);
 }
 
 /* ============================================================
-   BODY
+   BODY DEL MODAL
    ============================================================ */
 .modal-body {
-  padding: 20px;
+  padding: var(--jama-space-5);
   overflow-y: auto;
   flex: 1;
 }
@@ -94,82 +101,91 @@
   width: 8px;
 }
 
+.modal-body::-webkit-scrollbar-track {
+  background: var(--jama-surface-alt);
+  border-radius: var(--jama-radius-sm);
+}
+
 .modal-body::-webkit-scrollbar-thumb {
-  background: #cbd5e0;
-  border-radius: 4px;
+  background: var(--jama-brand-gold);
+  border-radius: var(--jama-radius-sm);
 }
 
 /* ============================================================
    SECCIONES
    ============================================================ */
 .section {
-  margin-bottom: 20px;
+  margin-bottom: var(--jama-space-5);
 }
 
 .section:last-of-type {
-  margin-bottom: 12px;
+  margin-bottom: var(--jama-space-3);
 }
 
 .section-label {
   display: block;
-  font-weight: 600;
-  color: #2d3748;
-  font-size: 0.92rem;
-  margin-bottom: 10px;
+  font-family: var(--jama-font-display);
+  font-weight: var(--jama-weight-semibold);
+  color: var(--jama-brand-green);
+  font-size: var(--jama-text-sm);
+  margin-bottom: var(--jama-space-3);
 }
 
 .section-header-inline {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
-  gap: 12px;
+  margin-bottom: var(--jama-space-3);
+  gap: var(--jama-space-3);
   flex-wrap: wrap;
 }
 
 .btn-toggle-all {
   background: transparent;
-  border: 1px solid #cbd5e0;
-  color: #4a5568;
-  font-size: 0.8rem;
-  padding: 5px 12px;
-  border-radius: 6px;
+  border: 1px solid var(--jama-brand-green);
+  color: var(--jama-brand-green);
+  font-family: var(--jama-font-display);
+  font-size: var(--jama-text-xs);
+  font-weight: var(--jama-weight-semibold);
+  padding: var(--jama-space-1) var(--jama-space-3);
+  border-radius: var(--jama-radius-sm);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all var(--jama-transition-fast);
 }
 
 .btn-toggle-all:hover {
-  background: #edf2f7;
-  border-color: #a0aec0;
+  background: var(--jama-brand-green);
+  color: var(--jama-text-inverse);
 }
 
 /* ============================================================
-   SELECTOR DE MODO (radio cards)
+   SELECTOR DE MODO
    ============================================================ */
 .modo-selector {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--jama-space-2);
 }
 
 .modo-option {
   display: block;
-  padding: 12px 14px;
-  border: 2px solid #e2e8f0;
-  border-radius: 10px;
+  padding: var(--jama-space-3) var(--jama-space-4);
+  border: 2px solid var(--jama-border);
+  border-radius: var(--jama-radius-md);
   cursor: pointer;
-  transition: all 0.15s;
-  background: #fff;
+  transition: all var(--jama-transition-fast);
+  background: var(--jama-surface);
 }
 
 .modo-option:hover {
-  border-color: #cbd5e0;
-  background: #f7fafc;
+  border-color: var(--jama-brand-gold);
+  background: var(--jama-brand-gold-light);
 }
 
 .modo-option.active {
-  border-color: #805ad5;
-  background: #faf5ff;
+  border-color: var(--jama-brand-green);
+  background: var(--jama-brand-green-light);
+  box-shadow: var(--jama-shadow-sm);
 }
 
 .modo-option input[type="radio"] {
@@ -179,7 +195,7 @@
 .modo-content {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--jama-space-3);
 }
 
 .modo-icon {
@@ -194,13 +210,16 @@
 }
 
 .modo-text strong {
-  color: #2d3748;
-  font-size: 0.95rem;
+  font-family: var(--jama-font-display);
+  color: var(--jama-brand-green);
+  font-size: var(--jama-text-sm);
+  font-weight: var(--jama-weight-bold);
 }
 
 .modo-text small {
-  color: #718096;
-  font-size: 0.8rem;
+  font-family: var(--jama-font-body);
+  color: var(--jama-text-secondary);
+  font-size: var(--jama-text-xs);
 }
 
 /* ============================================================
@@ -209,36 +228,47 @@
 .categorias-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 8px;
+  gap: var(--jama-space-2);
   max-height: 240px;
   overflow-y: auto;
-  padding: 4px;
-  border: 1px solid #edf2f7;
-  border-radius: 8px;
-  background: #fafbfc;
+  padding: var(--jama-space-2);
+  border: 1px solid var(--jama-border);
+  border-radius: var(--jama-radius-md);
+  background: var(--jama-surface-alt);
+}
+
+.categorias-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.categorias-grid::-webkit-scrollbar-thumb {
+  background: var(--jama-brand-gold);
+  border-radius: var(--jama-radius-full);
 }
 
 .categoria-check {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: 6px;
-  font-size: 0.85rem;
+  gap: var(--jama-space-2);
+  padding: var(--jama-space-2) var(--jama-space-3);
+  border-radius: var(--jama-radius-sm);
+  font-family: var(--jama-font-body);
+  font-size: var(--jama-text-sm);
   cursor: pointer;
-  transition: background 0.15s;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  transition: all var(--jama-transition-fast);
+  background: var(--jama-surface);
+  border: 1px solid var(--jama-border);
 }
 
 .categoria-check:hover {
-  background: #edf2f7;
+  background: var(--jama-brand-gold-light);
+  border-color: var(--jama-brand-gold);
 }
 
 .categoria-check input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #3182ce;
+  accent-color: var(--jama-brand-green);
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -249,45 +279,48 @@
 
 .categoria-nombre {
   flex: 1;
-  color: #2d3748;
+  color: var(--jama-text);
 }
 
 .categoria-count {
-  color: #718096;
-  font-size: 0.78rem;
+  color: var(--jama-text-muted);
+  font-size: var(--jama-text-xs);
+  font-weight: var(--jama-weight-semibold);
 }
 
 /* ============================================================
-   OPCIONES TOGGLE (para "compartir")
+   OPCIONES TOGGLE
    ============================================================ */
 .opciones-check {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--jama-space-2);
 }
 
 .opcion-toggle {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: #f7fafc;
-  border: 1px solid #e2e8f0;
+  gap: var(--jama-space-3);
+  padding: var(--jama-space-3) var(--jama-space-4);
+  border-radius: var(--jama-radius-md);
+  background: var(--jama-surface-alt);
+  border: 1px solid var(--jama-border);
   cursor: pointer;
-  transition: background 0.15s;
-  font-size: 0.9rem;
-  color: #2d3748;
+  transition: all var(--jama-transition-fast);
+  font-family: var(--jama-font-body);
+  font-size: var(--jama-text-sm);
+  color: var(--jama-text);
 }
 
 .opcion-toggle:hover {
-  background: #edf2f7;
+  background: var(--jama-brand-gold-light);
+  border-color: var(--jama-brand-gold);
 }
 
 .opcion-toggle input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: #3182ce;
+  accent-color: var(--jama-brand-green);
   cursor: pointer;
 }
 
@@ -295,96 +328,111 @@
    CAMPOS DE TEXTO
    ============================================================ */
 .campo {
-  margin-bottom: 12px;
+  margin-bottom: var(--jama-space-3);
 }
 
 .campo label {
   display: block;
-  font-size: 0.85rem;
-  color: #4a5568;
-  margin-bottom: 4px;
+  font-family: var(--jama-font-display);
+  font-size: var(--jama-text-sm);
+  font-weight: var(--jama-weight-semibold);
+  color: var(--jama-text-secondary);
+  margin-bottom: var(--jama-space-1);
 }
 
 .campo input {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #cbd5e0;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  color: #2d3748;
+  padding: var(--jama-space-3) var(--jama-space-4);
+  border: 1px solid var(--jama-border-strong);
+  border-radius: var(--jama-radius-md);
+  font-family: var(--jama-font-body);
+  font-size: var(--jama-text-sm);
+  color: var(--jama-text);
+  background: var(--jama-surface);
   outline: none;
-  transition: border-color 0.15s;
+  transition: all var(--jama-transition-fast);
   box-sizing: border-box;
 }
 
 .campo input:focus {
-  border-color: #805ad5;
-  box-shadow: 0 0 0 3px rgba(128, 90, 213, 0.12);
+  border-color: var(--jama-brand-green);
+  box-shadow: 0 0 0 3px rgba(31, 78, 61, 0.1);
 }
 
 /* ============================================================
    INFO BOX
    ============================================================ */
 .info-box {
-  margin-top: 12px;
-  padding: 10px 14px;
-  background: #ebf8ff;
-  border-left: 4px solid #3182ce;
-  border-radius: 6px;
-  font-size: 0.82rem;
-  color: #2c5282;
-  line-height: 1.5;
+  margin-top: var(--jama-space-3);
+  padding: var(--jama-space-3) var(--jama-space-4);
+  background: var(--jama-info-light);
+  border-left: 4px solid var(--jama-info);
+  border-radius: var(--jama-radius-sm);
+  font-family: var(--jama-font-body);
+  font-size: var(--jama-text-xs);
+  color: var(--jama-info-hover);
+  line-height: var(--jama-leading-relaxed);
+}
+
+.info-box strong {
+  font-family: var(--jama-font-display);
+  font-weight: var(--jama-weight-bold);
 }
 
 /* ============================================================
-   FOOTER
+   FOOTER DEL MODAL
    ============================================================ */
 .modal-footer {
   display: flex;
-  gap: 10px;
-  padding: 14px 20px;
-  border-top: 1px solid #edf2f7;
-  background: #f7fafc;
+  gap: var(--jama-space-3);
+  padding: var(--jama-space-4) var(--jama-space-5);
+  border-top: 1px solid var(--jama-border);
+  background: var(--jama-surface-alt);
   flex-shrink: 0;
 }
 
 .btn-cancel,
 .btn-send {
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-size: 0.95rem;
-  font-weight: 700;
+  padding: var(--jama-space-3) var(--jama-space-4);
+  border-radius: var(--jama-radius-md);
+  font-family: var(--jama-font-display);
+  font-size: var(--jama-text-base);
+  font-weight: var(--jama-weight-bold);
   cursor: pointer;
   border: none;
-  transition: all 0.15s;
+  transition: all var(--jama-transition-fast);
   flex: 1;
 }
 
 .btn-cancel {
-  background: #fff;
-  color: #4a5568;
-  border: 1px solid #cbd5e0;
+  background: var(--jama-surface);
+  color: var(--jama-text-secondary);
+  border: 1px solid var(--jama-border-strong);
 }
 
 .btn-cancel:hover {
-  background: #edf2f7;
+  background: var(--jama-surface-alt);
+  border-color: var(--jama-brand-green);
+  color: var(--jama-brand-green);
 }
 
 .btn-send {
   background: #25D366;
-  color: #fff;
+  color: var(--jama-text-inverse);
   box-shadow: 0 4px 10px rgba(37, 211, 102, 0.25);
 }
 
 .btn-send:hover:not(:disabled) {
   background: #20ba5a;
   transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35);
 }
 
 .btn-send:disabled {
-  background: #cbd5e0;
+  background: var(--jama-border-strong);
   cursor: not-allowed;
   box-shadow: none;
+  transform: none;
 }
 
 /* ============================================================
@@ -393,11 +441,11 @@
 @media (max-width: 599px) {
   .modal-content {
     max-height: 96vh;
-    border-radius: 12px;
+    border-radius: var(--jama-radius-lg);
   }
 
   .modal-body {
-    padding: 16px;
+    padding: var(--jama-space-4);
   }
 
   .categorias-grid {
