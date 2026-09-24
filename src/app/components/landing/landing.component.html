@@ -1,0 +1,257 @@
+<div class="landing">
+
+  <!-- ============================================================
+       HEADER / NAVBAR
+       ============================================================ -->
+  <header class="landing-header">
+    <div class="landing-header-inner">
+
+        <!-- Logo -->
+        <a class="landing-logo" (click)="scrollA('hero')">
+        <img src="assets/brand/logo-a-full.png"
+            alt="Jama"
+            class="landing-logo-img">
+        </a>
+
+      <!-- Nav desktop -->
+      <nav class="landing-nav" [class.open]="menuAbierto">
+        <a (click)="scrollA('como-funciona')">Cómo funciona</a>
+        <a (click)="scrollA('features')">Beneficios</a>
+        <a (click)="scrollA('faq')">Preguntas</a>
+        <a routerLink="/planner" class="landing-nav-cta" (click)="cerrarMenu()">
+          Probar Jama
+        </a>
+      </nav>
+
+      <!-- Toggle móvil -->
+      <button class="landing-menu-toggle" (click)="toggleMenu()" [attr.aria-label]="menuAbierto ? 'Cerrar menú' : 'Abrir menú'">
+        {{ menuAbierto ? '✕' : '☰' }}
+      </button>
+
+    </div>
+  </header>
+
+
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <section id="hero" class="landing-hero">
+    <div class="landing-hero-inner">
+
+      <!-- Lado izquierdo: copy -->
+      <div class="landing-hero-copy">
+        <span class="landing-hero-badge">✨ Con inteligencia artificial</span>
+
+        <h1 class="landing-hero-title">
+          Cocina tu menú y
+          <span class="landing-hero-title-accent">jamea según tu antojo</span>
+        </h1>
+
+        <p class="landing-hero-subtitle">
+          La IA te ayuda a planificar tu semana, generar tu lista de compras
+          con precios locales y enviarla por WhatsApp a tu casero o supermercado.
+        </p>
+
+        <div class="landing-hero-actions">
+          <a routerLink="/planner" class="jama-btn-primary landing-hero-cta">
+            🚀 Probar Jama
+          </a>
+          <button class="jama-btn-outline landing-hero-secondary" (click)="scrollA('como-funciona')">
+            Ver cómo funciona
+          </button>
+        </div>
+
+        <ul class="landing-hero-features">
+          <li>✓ Sin registro</li>
+          <li>✓ 100% gratis</li>
+          <li>✓ Perú y Argentina</li>
+        </ul>
+      </div>
+
+        <!-- Lado derecho: Logo B -->
+        <div class="landing-hero-visual">
+        <img src="assets/brand/logo-b-full.png"
+            alt="Jama - Cocinera"
+            class="landing-hero-visual-img">
+        </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       CÓMO FUNCIONA
+       ============================================================ -->
+  <section id="como-funciona" class="landing-section landing-section-alt">
+    <div class="landing-section-inner">
+      <h2 class="landing-section-title">¿Cómo funciona Jama?</h2>
+      <p class="landing-section-subtitle">
+        En 3 simples pasos tendrás tu menú, tu lista y tus tips.
+      </p>
+
+      <div class="landing-steps">
+
+        <div class="landing-step">
+          <div class="landing-step-number">1</div>
+          <div class="landing-step-icon">🌎</div>
+          <h3 class="landing-step-title">Elige tu país y personas</h3>
+          <p class="landing-step-desc">
+            Selecciona Perú o Argentina, e indica para cuántas personas vas a cocinar.
+          </p>
+        </div>
+
+        <div class="landing-step">
+          <div class="landing-step-number">2</div>
+          <div class="landing-step-icon">🍽️</div>
+          <h3 class="landing-step-title">Arma tu menú semanal</h3>
+          <p class="landing-step-desc">
+            Elige los platos de cada día o deja que la IA te sugiera un menú aleatorio.
+          </p>
+        </div>
+
+        <div class="landing-step">
+          <div class="landing-step-number">3</div>
+          <div class="landing-step-icon">🛒</div>
+          <h3 class="landing-step-title">Genera tu lista</h3>
+          <p class="landing-step-desc">
+            Obtén la lista de compras con precios referenciales, tips de cocina y
+            envíala por WhatsApp.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       FEATURES / BENEFICIOS
+       ============================================================ -->
+  <section id="features" class="landing-section">
+    <div class="landing-section-inner">
+      <h2 class="landing-section-title">¿Por qué elegir Jama?</h2>
+      <p class="landing-section-subtitle">
+        Todo lo que necesitas para organizar tus comidas sin estrés.
+      </p>
+
+      <div class="landing-features">
+
+        <div class="landing-feature">
+          <div class="landing-feature-icon">🌎</div>
+          <h3 class="landing-feature-title">Precios locales</h3>
+          <p class="landing-feature-desc">
+            Precios referenciales de Perú y Argentina basados en mercados mayoristas.
+          </p>
+        </div>
+
+        <div class="landing-feature">
+          <div class="landing-feature-icon">🍽️</div>
+          <h3 class="landing-feature-title">Recetas paso a paso</h3>
+          <p class="landing-feature-desc">
+            Cada plato incluye insumos exactos, tips previos y pasos detallados.
+          </p>
+        </div>
+
+        <div class="landing-feature">
+          <div class="landing-feature-icon">🛒</div>
+          <h3 class="landing-feature-title">Lista inteligente</h3>
+          <p class="landing-feature-desc">
+            Calcula cantidades según personas, descuenta lo que ya tienes y suma costos.
+          </p>
+        </div>
+
+        <div class="landing-feature">
+          <div class="landing-feature-icon">📱</div>
+          <h3 class="landing-feature-title">Envío por WhatsApp</h3>
+          <p class="landing-feature-desc">
+            3 modos de envío: pedido a proveedor, resumen para compartir o lista rápida.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       FAQ
+       ============================================================ -->
+  <section id="faq" class="landing-section landing-section-alt">
+    <div class="landing-section-inner landing-section-inner-narrow">
+      <h2 class="landing-section-title">Preguntas frecuentes</h2>
+
+      <div class="landing-faq">
+
+        <details class="landing-faq-item">
+          <summary>¿Es gratis usar Jama?</summary>
+          <p>Sí, Jama es 100% gratis. No necesitas crear una cuenta ni dejar datos personales.</p>
+        </details>
+
+        <details class="landing-faq-item">
+          <summary>¿De dónde vienen los precios?</summary>
+          <p>Usamos precios mayoristas referenciales del Gran Mercado Mayorista de Lima (GMML) para Perú y del Mercado Central de Buenos Aires para Argentina. Los precios pueden variar según zona y fecha.</p>
+        </details>
+
+        <details class="landing-faq-item">
+          <summary>¿Funciona para otros países?</summary>
+          <p>Actualmente Jama soporta Perú y Argentina. Pronto agregaremos más países de Latinoamérica.</p>
+        </details>
+
+        <details class="landing-faq-item">
+          <summary>¿Puedo usar Jama desde mi celular?</summary>
+          <p>Sí, Jama está diseñado para funcionar en cualquier dispositivo: celular, tablet o computadora.</p>
+        </details>
+
+        <details class="landing-faq-item">
+          <summary>¿Necesito saber cocinar?</summary>
+          <p>No. Jama te guía paso a paso en cada receta, con tips previos y trucos que te ayudarán a cocinar mejor.</p>
+        </details>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       CTA FINAL
+       ============================================================ -->
+  <section class="landing-cta">
+    <div class="landing-cta-inner">
+      <h2 class="landing-cta-title">¿Listo para jamear rico?</h2>
+      <p class="landing-cta-subtitle">
+        Empieza ahora y organiza tu semana en minutos.
+      </p>
+      <a routerLink="/planner" class="jama-btn-primary landing-cta-button">
+        🚀 Probar Jama
+      </a>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+<footer class="landing-footer">
+  <div class="landing-footer-inner">
+    <div class="landing-footer-brand">
+      <a class="landing-logo" (click)="scrollA('hero')">
+        <img src="assets/brand/logo-a-full.png" alt="Jama" class="landing-logo-img">
+      </a>
+      <p class="landing-footer-tagline">Hecho con 💚 para todos los que jamean rico.</p>
+    </div>
+
+    <div class="landing-footer-links">
+      <button (click)="scrollA('como-funciona')">Cómo funciona</button>
+      <button (click)="scrollA('features')">Beneficios</button>
+      <button (click)="scrollA('faq')">Preguntas frecuentes</button>
+      <a routerLink="/planner">Probar Jama</a>
+    </div>
+  </div>
+
+  <!-- Copyright FUERA del grid, ocupa todo el ancho -->
+  <div class="landing-footer-copy">
+    <p>© {{ currentYear }} Jama. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+</div>

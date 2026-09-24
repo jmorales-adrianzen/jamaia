@@ -1,0 +1,292 @@
+/* ============================================================
+   JAMA — DESIGN SYSTEM v1.0
+   Sistema de diseño unificado para la marca Jama
+   ============================================================ */
+
+/* ============================================================
+   1. IMPORTACIÓN DE TIPOGRAFÍAS
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+
+/* ============================================================
+   2. VARIABLES DE DISEÑO
+   ============================================================ */
+:root {
+
+  /* ============================================================
+     BRAND — Colores derivados del logo (verde + dorado)
+     ============================================================ */
+  --jama-brand-green:       #1F4E3D;
+  --jama-brand-green-hover: #2D6A54;
+  --jama-brand-green-light: #E8F5F0;
+  --jama-brand-gold:        #D4AF37;
+  --jama-brand-gold-hover:  #E8C868;
+  --jama-brand-gold-light:  #FDF9EC;
+  --jama-brand-dark:        #1A1A1A;
+  --jama-brand-cream:       #FFFBF7;
+
+  /* ============================================================
+     PRIMARY — CTA (Naranja Jama)
+     ============================================================ */
+  --jama-primary:           #FF6B35;
+  --jama-primary-hover:     #E85A2B;
+  --jama-primary-light:     #FFE5D9;
+
+  /* ============================================================
+     FUNCTIONAL — Estados semánticos
+     ============================================================ */
+  --jama-success:           #38A169;
+  --jama-success-hover:     #2F855A;
+  --jama-success-light:     #E6FFFA;
+
+  --jama-info:              #3182CE;
+  --jama-info-hover:        #2C5282;
+  --jama-info-light:        #EBF8FF;
+
+  --jama-warning:           #F6AD55;
+  --jama-warning-hover:     #DD6B20;
+  --jama-warning-light:     #FFFAF0;
+
+  --jama-danger:            #E53E3E;
+  --jama-danger-hover:      #C53030;
+  --jama-danger-light:      #FFF5F5;
+
+  --jama-accent:            #805AD5;
+  --jama-accent-hover:      #6B46C1;
+  --jama-accent-light:      #FAF5FF;
+
+  /* ============================================================
+     NEUTRALS
+     ============================================================ */
+  --jama-bg:                #FFFBF7;
+  --jama-surface:           #FFFFFF;
+  --jama-surface-alt:       #F7FAFC;
+  --jama-surface-hover:     #F0F4F8;
+
+  --jama-border:            #EDF2F7;
+  --jama-border-strong:     #CBD5E0;
+
+  /* ============================================================
+     TEXT
+     ============================================================ */
+  --jama-text:              #1A202C;
+  --jama-text-secondary:    #4A5568;
+  --jama-text-muted:        #A0AEC0;
+  --jama-text-inverse:      #FFFFFF;
+
+  /* ============================================================
+     TYPOGRAPHY
+     ============================================================ */
+  --jama-font-display:      'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  --jama-font-body:         'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --jama-text-xs:           0.75rem;
+  --jama-text-sm:           0.875rem;
+  --jama-text-base:         1rem;
+  --jama-text-lg:           1.125rem;
+  --jama-text-xl:           1.25rem;
+  --jama-text-2xl:          1.5rem;
+  --jama-text-3xl:          1.875rem;
+  --jama-text-4xl:          2.25rem;
+  --jama-text-5xl:          3rem;
+
+  --jama-weight-regular:    400;
+  --jama-weight-medium:     500;
+  --jama-weight-semibold:   600;
+  --jama-weight-bold:       700;
+  --jama-weight-extrabold:  800;
+
+  --jama-leading-tight:     1.2;
+  --jama-leading-normal:    1.5;
+  --jama-leading-relaxed:   1.7;
+
+  /* ============================================================
+     SPACING
+     ============================================================ */
+  --jama-space-1:           0.25rem;
+  --jama-space-2:           0.5rem;
+  --jama-space-3:           0.75rem;
+  --jama-space-4:           1rem;
+  --jama-space-5:           1.25rem;
+  --jama-space-6:           1.5rem;
+  --jama-space-8:           2rem;
+  --jama-space-10:          2.5rem;
+  --jama-space-12:          3rem;
+  --jama-space-16:          4rem;
+
+  /* ============================================================
+     RADIUS
+     ============================================================ */
+  --jama-radius-sm:         6px;
+  --jama-radius-md:         10px;
+  --jama-radius-lg:         14px;
+  --jama-radius-xl:         20px;
+  --jama-radius-full:       9999px;
+
+  /* ============================================================
+     SHADOWS
+     ============================================================ */
+  --jama-shadow-xs:         0 1px 2px rgba(0, 0, 0, 0.04);
+  --jama-shadow-sm:         0 1px 3px rgba(0, 0, 0, 0.06);
+  --jama-shadow-md:         0 4px 12px rgba(0, 0, 0, 0.08);
+  --jama-shadow-lg:         0 10px 30px rgba(0, 0, 0, 0.10);
+  --jama-shadow-xl:         0 20px 50px rgba(0, 0, 0, 0.15);
+  --jama-shadow-brand:      0 4px 16px rgba(31, 78, 61, 0.15);
+  --jama-shadow-cta:        0 4px 16px rgba(255, 107, 53, 0.25);
+
+  /* ============================================================
+     GRADIENTS
+     ============================================================ */
+  --jama-gradient-brand:    linear-gradient(135deg, #1F4E3D 0%, #2D6A54 100%);
+  --jama-gradient-gold:     linear-gradient(135deg, #D4AF37 0%, #E8C868 100%);
+  --jama-gradient-cta:      linear-gradient(135deg, #FF6B35 0%, #FF8A5C 100%);
+  --jama-gradient-hero:     linear-gradient(135deg, #1F4E3D 0%, #2D6A54 50%, #D4AF37 100%);
+
+  /* ============================================================
+     TRANSITIONS
+     ============================================================ */
+  --jama-transition-fast:   0.15s ease-out;
+  --jama-transition-base:   0.2s ease-out;
+  --jama-transition-slow:   0.3s ease-out;
+}
+
+
+/* ============================================================
+   3. COMPONENTES REUTILIZABLES
+   ============================================================ */
+
+/* --- Botón Principal (CTA Naranja) --- */
+.jama-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--jama-space-2);
+  padding: var(--jama-space-3) var(--jama-space-6);
+  background: var(--jama-gradient-cta);
+  color: var(--jama-text-inverse);
+  border: none;
+  border-radius: var(--jama-radius-md);
+  font-family: var(--jama-font-display);
+  font-size: var(--jama-text-base);
+  font-weight: var(--jama-weight-bold);
+  cursor: pointer;
+  transition: all var(--jama-transition-base);
+  box-shadow: var(--jama-shadow-cta);
+  text-decoration: none;
+}
+
+.jama-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.35);
+}
+
+.jama-btn-primary:active {
+  transform: translateY(0);
+}
+
+.jama-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* --- Botón Secundario (Verde Botella) --- */
+.jama-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--jama-space-2);
+  padding: var(--jama-space-3) var(--jama-space-6);
+  background: var(--jama-brand-green);
+  color: var(--jama-text-inverse);
+  border: none;
+  border-radius: var(--jama-radius-md);
+  font-family: var(--jama-font-display);
+  font-size: var(--jama-text-base);
+  font-weight: var(--jama-weight-semibold);
+  cursor: pointer;
+  transition: all var(--jama-transition-base);
+  box-shadow: var(--jama-shadow-brand);
+}
+
+.jama-btn-secondary:hover {
+  background: var(--jama-brand-green-hover);
+  transform: translateY(-1px);
+}
+
+/* --- Botón Outline --- */
+.jama-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--jama-space-2);
+  padding: var(--jama-space-3) var(--jama-space-6);
+  background: transparent;
+  color: var(--jama-brand-green);
+  border: 2px solid var(--jama-brand-green);
+  border-radius: var(--jama-radius-md);
+  font-family: var(--jama-font-display);
+  font-size: var(--jama-text-base);
+  font-weight: var(--jama-weight-semibold);
+  cursor: pointer;
+  transition: all var(--jama-transition-base);
+}
+
+.jama-btn-outline:hover {
+  background: var(--jama-brand-green);
+  color: var(--jama-text-inverse);
+}
+
+/* --- Card --- */
+.jama-card {
+  background: var(--jama-surface);
+  border-radius: var(--jama-radius-lg);
+  padding: var(--jama-space-6);
+  box-shadow: var(--jama-shadow-sm);
+  border: 1px solid var(--jama-border);
+  transition: all var(--jama-transition-base);
+}
+
+.jama-card:hover {
+  box-shadow: var(--jama-shadow-md);
+}
+
+/* --- Section Title --- */
+.jama-section-title {
+  font-family: var(--jama-font-display);
+  font-size: var(--jama-text-2xl);
+  font-weight: var(--jama-weight-bold);
+  color: var(--jama-brand-green);
+  margin-bottom: var(--jama-space-4);
+  position: relative;
+  display: inline-block;
+}
+
+.jama-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: var(--jama-brand-gold);
+  border-radius: var(--jama-radius-full);
+}
+
+
+/* ============================================================
+   4. UTILITIES
+   ============================================================ */
+.jama-text-brand      { color: var(--jama-brand-green); }
+.jama-text-gold       { color: var(--jama-brand-gold); }
+.jama-text-primary    { color: var(--jama-primary); }
+.jama-text-muted      { color: var(--jama-text-muted); }
+
+.jama-bg-brand        { background: var(--jama-brand-green); }
+.jama-bg-cream        { background: var(--jama-bg); }
+.jama-bg-gold-light   { background: var(--jama-brand-gold-light); }
+
+.jama-gradient-brand  { background: var(--jama-gradient-brand); }
+.jama-gradient-hero   { background: var(--jama-gradient-hero); }
