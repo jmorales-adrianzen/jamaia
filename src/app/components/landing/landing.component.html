@@ -18,8 +18,8 @@
         <a (click)="scrollA('como-funciona')">Cómo funciona</a>
         <a (click)="scrollA('features')">Beneficios</a>
         <a (click)="scrollA('faq')">Preguntas</a>
-        <a routerLink="/planner" class="landing-nav-cta" (click)="cerrarMenu()">
-          Probar Jama
+        <a class="landing-nav-cta" (click)="probarJama()">
+        Probar Jama
         </a>
       </nav>
 
@@ -53,9 +53,9 @@
         </p>
 
         <div class="landing-hero-actions">
-          <a routerLink="/planner" class="jama-btn-primary landing-hero-cta">
+            <a class="jama-btn-primary landing-hero-cta" (click)="probarJama()">
             🚀 Probar Jama
-          </a>
+            </a>
           <button class="jama-btn-outline landing-hero-secondary" (click)="scrollA('como-funciona')">
             Ver cómo funciona
           </button>
@@ -221,9 +221,9 @@
       <p class="landing-cta-subtitle">
         Empieza ahora y organiza tu semana en minutos.
       </p>
-      <a routerLink="/planner" class="jama-btn-primary landing-cta-button">
+        <a class="jama-btn-primary landing-cta-button" (click)="probarJama()">
         🚀 Probar Jama
-      </a>
+        </a>
     </div>
   </section>
 
@@ -244,7 +244,7 @@
       <button (click)="scrollA('como-funciona')">Cómo funciona</button>
       <button (click)="scrollA('features')">Beneficios</button>
       <button (click)="scrollA('faq')">Preguntas frecuentes</button>
-      <a routerLink="/planner">Probar Jama</a>
+      <a (click)="probarJama()" style="cursor: pointer;">Probar Jama</a>
     </div>
   </div>
 
