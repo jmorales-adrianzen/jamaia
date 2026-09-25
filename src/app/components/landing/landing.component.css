@@ -50,7 +50,7 @@
 }
 
 .landing-logo-img {
-  height: 160px;
+  height: 140px;
   width: auto;
   display: block;
 }
@@ -149,7 +149,7 @@
    HERO
    ============================================================ */
 .landing-hero {
-  padding: var(--jama-space-12) var(--jama-space-6) var(--jama-space-16);
+  padding: var(--jama-space-5) var(--jama-space-6) var(--jama-space-8);
   background: linear-gradient(135deg, var(--jama-brand-green-light) 0%, var(--jama-brand-gold-light) 100%);
   position: relative;
   overflow: hidden;
