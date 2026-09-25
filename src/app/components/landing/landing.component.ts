@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { AnalyticsService } from 'src/app/services/analytics.service';
 
 @Component({
   selector: 'app-landing',
@@ -11,14 +12,15 @@ import { RouterModule } from '@angular/router';
 })
 export class LandingComponent implements OnInit {
 
-  // Año dinámico para el footer
   readonly currentYear = new Date().getFullYear();
-
-  // Estado del menú móvil
   menuAbierto: boolean = false;
 
+  constructor(
+    private router: Router,
+    private analytics: AnalyticsService
+  ) {}
+
   ngOnInit(): void {
-    // Scroll to top al entrar a la landing
     window.scrollTo(0, 0);
   }
 
@@ -30,14 +32,20 @@ export class LandingComponent implements OnInit {
     this.menuAbierto = false;
   }
 
-  /**
-   * Hace scroll suave a una sección de la landing.
-   */
   scrollA(seccionId: string): void {
     const el = document.getElementById(seccionId);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     this.cerrarMenu();
+  }
+
+  /**
+   * Trackea el clic en "Probar Jama" y navega a /planner.
+   */
+  probarJama(): void {
+    this.analytics.track('click_probar');
+    this.cerrarMenu();
+    this.router.navigate(['/planner']);
   }
 }

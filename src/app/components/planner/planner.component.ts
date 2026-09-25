@@ -7,6 +7,7 @@ import { ItemCompra } from 'src/app/models/plato.model';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
 import { MenuService } from 'src/app/services/menu.service';
 import { RouterModule } from '@angular/router';
+import { AnalyticsService } from 'src/app/services/analytics.service';
 import {
   PlatoCompleto,
   Ubicacion,
@@ -71,7 +72,8 @@ export class PlannerComponent implements OnInit {
   constructor(
     private sanitizer: DomSanitizer,
     private ubicacionService: UbicacionService,
-    private menuService: MenuService
+    private menuService: MenuService,
+    private analytics: AnalyticsService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -243,14 +245,15 @@ export class PlannerComponent implements OnInit {
     });
   }
 
-  ejecutarGeneracion(): void {
-    this.mostrarResultado = false;
-    this.cargando = true;
-    setTimeout(() => {
-      this.cargando = false;
-      this.generarPlanificacion();
-    }, 800);
-  }
+ejecutarGeneracion(): void {
+  this.analytics.track('click_generar');   // 👈 NUEVO
+  this.mostrarResultado = false;
+  this.cargando = true;
+  setTimeout(() => {
+    this.cargando = false;
+    this.generarPlanificacion();
+  }, 800);
+}
 
   private generarPlanificacion(): void {
     const resultado: ResultadoMenu = this.menuService.calcularMenu(

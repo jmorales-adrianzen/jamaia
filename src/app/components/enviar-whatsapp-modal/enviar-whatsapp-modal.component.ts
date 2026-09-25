@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { AnalyticsService } from 'src/app/services/analytics.service';
 import { WhatsappService } from 'src/app/services/whatsapp.service';
 import { ItemCompra, PlatoCompleto } from 'src/app/models/plato.model';
 import {
@@ -49,7 +49,10 @@ export class EnviarWhatsappModalComponent implements OnInit {
   incluirPlatos: boolean = true;
   incluirPrecios: boolean = true;
 
-  constructor(private whatsappService: WhatsappService) {}
+  constructor(
+    private whatsappService: WhatsappService,
+    private analytics: AnalyticsService 
+  ) {}
 
   ngOnInit(): void {
     this.construirCategorias();
@@ -91,6 +94,8 @@ export class EnviarWhatsappModalComponent implements OnInit {
 
   // ===== Enviar =====
   enviar(): void {
+    this.analytics.track('click_whatsapp'); 
+    
     const datos: DatosEnvioWhatsapp = {
       compras: this.compras,
       platos: this.platos,

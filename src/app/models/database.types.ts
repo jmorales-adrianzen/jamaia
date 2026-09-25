@@ -12,8 +12,129 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          browser_name: string | null
+          browser_version: string | null
+          city: string | null
+          color_depth: number | null
+          connection_type: string | null
+          country_code: string | null
+          country_name: string | null
+          cpu_cores: number | null
+          created_at: string | null
+          device_memory: number | null
+          device_pixel_ratio: number | null
+          device_type: string | null
+          event_type: string
+          id: number
+          language: string | null
+          languages: string | null
+          orientation: string | null
+          os_name: string | null
+          page_path: string | null
+          prefers_dark_mode: boolean | null
+          referrer: string | null
+          region: string | null
+          screen_height: number | null
+          screen_width: number | null
+          session_id: string
+          timezone: string | null
+          user_agent: string | null
+          viewport_height: number | null
+          viewport_width: number | null
+        }
+        Insert: {
+          browser_name?: string | null
+          browser_version?: string | null
+          city?: string | null
+          color_depth?: number | null
+          connection_type?: string | null
+          country_code?: string | null
+          country_name?: string | null
+          cpu_cores?: number | null
+          created_at?: string | null
+          device_memory?: number | null
+          device_pixel_ratio?: number | null
+          device_type?: string | null
+          event_type: string
+          id?: number
+          language?: string | null
+          languages?: string | null
+          orientation?: string | null
+          os_name?: string | null
+          page_path?: string | null
+          prefers_dark_mode?: boolean | null
+          referrer?: string | null
+          region?: string | null
+          screen_height?: number | null
+          screen_width?: number | null
+          session_id: string
+          timezone?: string | null
+          user_agent?: string | null
+          viewport_height?: number | null
+          viewport_width?: number | null
+        }
+        Update: {
+          browser_name?: string | null
+          browser_version?: string | null
+          city?: string | null
+          color_depth?: number | null
+          connection_type?: string | null
+          country_code?: string | null
+          country_name?: string | null
+          cpu_cores?: number | null
+          created_at?: string | null
+          device_memory?: number | null
+          device_pixel_ratio?: number | null
+          device_type?: string | null
+          event_type?: string
+          id?: number
+          language?: string | null
+          languages?: string | null
+          orientation?: string | null
+          os_name?: string | null
+          page_path?: string | null
+          prefers_dark_mode?: boolean | null
+          referrer?: string | null
+          region?: string | null
+          screen_height?: number | null
+          screen_width?: number | null
+          session_id?: string
+          timezone?: string | null
+          user_agent?: string | null
+          viewport_height?: number | null
+          viewport_width?: number | null
+        }
+        Relationships: []
+      }
       categorias: {
         Row: {
           id: number
@@ -694,6 +815,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },
