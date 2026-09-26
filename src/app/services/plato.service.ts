@@ -1,3 +1,4 @@
+// src/app/services/plato.service.ts
 import { Injectable } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import {
@@ -6,10 +7,25 @@ import {
   RecomendacionAcompanamiento
 } from '../models/plato.model';
 
+// Estructura del resultado de buscarPorIngredientes
+export interface PlatoMatch {
+  platillo_id: number;
+  nombre: string;
+  imagen_url: string;
+  tiempo_prep: string;
+  ingredientes_totales: number;
+  ingredientes_tiene: number;
+  ingredientes_faltantes: number;
+  porcentaje_match: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PlatoService {
   constructor(private sb: SupabaseService) {}
 
+  // ============================================================
+  //  OBTENER TODOS LOS PLATOS DE UN PAÍS
+  // ============================================================
   async obtenerPlatosPorPais(ubicacionId: number): Promise<PlatoCompleto[]> {
     // Query 1: platillos + traducción + metadata
     const { data: traducciones, error: err1 } = await this.sb.client
@@ -134,5 +150,47 @@ export class PlatoService {
         acompanamientos: acompMap.get(t.platillo_id) ?? []
       };
     });
+  }
+
+  // ============================================================
+  //  BUSCAR PLATOS POR INGREDIENTES (RPC)
+  // ============================================================
+  /**
+   * Llama a la función RPC `buscar_platos_por_ingredientes`.
+   * Devuelve platos ordenados por cantidad de faltantes.
+   */
+  async buscarPorIngredientes(
+    ingredienteIds: number[],
+    ubicacionId: number,
+    maxFaltantes: number = 2,
+    limit: number = 30
+  ): Promise<PlatoMatch[]> {
+    const { data, error } = await this.sb.client.rpc(
+      'buscar_platos_por_ingredientes',
+      {
+        p_ingredientes: ingredienteIds,
+        p_ubicacion_id: ubicacionId,
+        p_max_faltantes: maxFaltantes,
+        p_limit: limit
+      }
+    );
+
+    if (error) throw error;
+    return (data ?? []) as PlatoMatch[];
+  }
+
+  // ============================================================
+  //  OBTENER DETALLE COMPLETO DE UN PLATO
+  // ============================================================
+  /**
+   * Trae todos los platos y filtra el que coincide con el ID.
+   * (Reutiliza `obtenerPlatosPorPais` para no duplicar lógica).
+   */
+  async obtenerDetallePlato(
+    platilloId: number,
+    ubicacionId: number
+  ): Promise<PlatoCompleto | null> {
+    const platos = await this.obtenerPlatosPorPais(ubicacionId);
+    return platos.find(p => p.platillo_id === platilloId) ?? null;
   }
 }

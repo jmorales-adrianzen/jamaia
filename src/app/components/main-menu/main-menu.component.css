@@ -1,0 +1,164 @@
+/* ============================================================
+   MAIN MENU — Jama
+   Menú de navegación reutilizable
+   ============================================================ */
+
+.main-menu {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--jama-surface);
+  border-bottom: 1px solid var(--jama-border);
+  box-shadow: var(--jama-shadow-xs);
+}
+
+.main-menu-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--jama-space-2) var(--jama-space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--jama-space-4);
+  position: relative;
+}
+
+/* ============================================================
+   LOGO
+   ============================================================ */
+.main-menu-logo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform var(--jama-transition-fast);
+  flex-shrink: 0;
+}
+
+.main-menu-logo:hover {
+  transform: scale(1.03);
+}
+
+.main-menu-logo-img {
+  height: 72px;
+  width: auto;
+  display: block;
+}
+
+/* ============================================================
+   NAVEGACIÓN
+   ============================================================ */
+.main-menu-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--jama-space-2);
+}
+
+.main-menu-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--jama-space-2);
+  padding: var(--jama-space-3) var(--jama-space-4);
+  font-family: var(--jama-font-display);
+  font-size: var(--jama-text-sm);
+  font-weight: var(--jama-weight-semibold);
+  color: var(--jama-text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: var(--jama-radius-md);
+  border-bottom: 3px solid transparent;
+  transition: all var(--jama-transition-fast);
+  position: relative;
+}
+
+.main-menu-link:hover {
+  background: var(--jama-brand-green-light);
+  color: var(--jama-brand-green);
+}
+
+.main-menu-link.active {
+  color: var(--jama-brand-green);
+  background: var(--jama-brand-green-light);
+  border-bottom-color: var(--jama-brand-gold);
+}
+
+.main-menu-link-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.main-menu-link-label {
+  white-space: nowrap;
+}
+
+/* ============================================================
+   TOGGLE MÓVIL
+   ============================================================ */
+.main-menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: var(--jama-brand-green);
+  cursor: pointer;
+  padding: var(--jama-space-2);
+  border-radius: var(--jama-radius-sm);
+  transition: background var(--jama-transition-fast);
+}
+
+.main-menu-toggle:hover {
+  background: var(--jama-brand-green-light);
+}
+
+/* ============================================================
+   RESPONSIVE — MÓVIL
+   ============================================================ */
+@media (max-width: 767px) {
+  .main-menu-inner {
+    padding: var(--jama-space-2) var(--jama-space-4);
+  }
+
+  .main-menu-logo-img {
+    height: 56px;
+  }
+
+  .main-menu-toggle {
+    display: block;
+  }
+
+  .main-menu-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--jama-surface);
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--jama-space-3);
+    gap: var(--jama-space-1);
+    border-bottom: 1px solid var(--jama-border);
+    box-shadow: var(--jama-shadow-md);
+    transform: translateY(-10px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all var(--jama-transition-base);
+  }
+
+  .main-menu-nav.open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .main-menu-link {
+    justify-content: flex-start;
+    padding: var(--jama-space-3) var(--jama-space-4);
+    border-bottom: none;
+    border-left: 3px solid transparent;
+  }
+
+  .main-menu-link.active {
+    border-bottom: none;
+    border-left-color: var(--jama-brand-gold);
+  }
+}

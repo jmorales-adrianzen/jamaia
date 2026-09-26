@@ -1,0 +1,29 @@
+<header class="main-menu">
+  <div class="main-menu-inner">
+
+    <!-- Logo -->
+    <a class="main-menu-logo" (click)="irAInicio()" title="Volver al inicio">
+      <img src="assets/brand/logo-a-full.png" alt="Jama" class="main-menu-logo-img">
+    </a>
+
+    <!-- Opciones de navegación -->
+    <nav class="main-menu-nav" [class.open]="menuAbierto">
+      <a *ngFor="let op of opciones"
+         [routerLink]="op.path"
+         [class.active]="esRutaActiva(op.path)"
+         (click)="cerrarMenu()"
+         class="main-menu-link">
+        <span class="main-menu-link-icon">{{ op.icon }}</span>
+        <span class="main-menu-link-label">{{ op.label }}</span>
+      </a>
+    </nav>
+
+    <!-- Toggle móvil -->
+    <button class="main-menu-toggle"
+            (click)="toggleMenu()"
+            [attr.aria-label]="menuAbierto ? 'Cerrar menú' : 'Abrir menú'">
+      {{ menuAbierto ? '✕' : '☰' }}
+    </button>
+
+  </div>
+</header>

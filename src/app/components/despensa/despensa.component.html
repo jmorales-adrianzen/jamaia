@@ -1,0 +1,269 @@
+<app-main-menu></app-main-menu>
+
+<div class="despensa-container">
+  <div class="despensa-inner">
+
+    <!-- ============================================================
+         HEADER
+         ============================================================ -->
+    <header class="despensa-header">
+      <h1 class="despensa-title">🍳 Mi despensa</h1>
+      <p class="despensa-subtitle">
+        Selecciona los ingredientes que tienes en casa y te mostraremos
+        qué platos puedes cocinar.
+      </p>
+    </header>
+
+    <!-- ============================================================
+         CONTROLES
+         ============================================================ -->
+    <div class="despensa-controls">
+
+      <!-- País -->
+      <div class="control-group">
+        <label class="control-label">🌎 País:</label>
+        <select class="control-select"
+                [(ngModel)]="paisActual"
+                (change)="cambiarPais()">
+          <option *ngFor="let p of paises" [value]="p.codigo_iso">
+            {{ p.codigo_iso === 'PE' ? '🇵🇪' : '🇦🇷' }} {{ p.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Tolerancia de faltantes -->
+      <div class="control-group">
+        <label class="control-label">📊 Tolerancia:</label>
+        <div class="faltantes-selector">
+          <button *ngFor="let op of opcionesFaltantes"
+                  type="button"
+                  class="faltantes-btn"
+                  [class.active]="maxFaltantes === op.valor"
+                  (click)="maxFaltantes = op.valor"
+                  [title]="op.desc">
+            {{ op.label }}
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================================
+         BUSCADOR Y CATEGORÍAS
+         ============================================================ -->
+    <div class="despensa-toolbar">
+      <input type="text"
+             class="filtro-input"
+             placeholder="🔍 Buscar ingrediente..."
+             [(ngModel)]="filtroIngredientes">
+
+      <div class="toolbar-actions">
+        <span class="seleccionados-badge">
+          {{ totalSeleccionados }} seleccionados
+        </span>
+        <button *ngIf="totalSeleccionados > 0"
+                type="button"
+                class="btn-limpiar"
+                (click)="limpiarSeleccion()">
+          ✕ Limpiar
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         CATEGORÍAS COLAPSABLES
+         ============================================================ -->
+    <div class="categorias-container" *ngIf="!cargandoDatos">
+      <div class="categoria-bloque" *ngFor="let cat of categorias">
+
+        <div class="categoria-header">
+          <span class="cat-arrow" (click)="toggleCategoria(cat)">
+            {{ cat.expandida ? '▼' : '▶' }}
+          </span>
+          <span class="cat-icon">{{ cat.icono }}</span>
+          <span class="cat-name" (click)="toggleCategoria(cat)">
+            {{ cat.nombre }}
+          </span>
+          <span class="cat-count">
+            {{ contarSeleccionadosCategoria(cat) }} / {{ cat.items.length }}
+          </span>
+          <label class="cat-check">
+            <input type="checkbox"
+                   [checked]="contarSeleccionadosCategoria(cat) === cat.items.length && cat.items.length > 0"
+                   (change)="toggleCategoriaCompleta(cat, $event)">
+          </label>
+        </div>
+
+        <div class="checkbox-grid" *ngIf="cat.expandida">
+          <label class="checkbox-card"
+                 *ngFor="let ing of cat.items"
+                 [style.display]="filtroIngredientes && !ing.nombre.toLowerCase().includes(filtroIngredientes.toLowerCase()) ? 'none' : 'flex'">
+            <input type="checkbox"
+                   [checked]="isSeleccionado(ing.id)"
+                   (change)="toggleIngrediente(ing.id)">
+            <span>{{ ing.nombre }}</span>
+          </label>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============================================================
+         BOTÓN BUSCAR
+         ============================================================ -->
+    <div class="buscar-actions">
+      <button class="btn-buscar"
+              type="button"
+              [disabled]="totalSeleccionados === 0 || buscando"
+              (click)="buscar()">
+        <span *ngIf="!buscando">🎯 Buscar platos</span>
+        <span *ngIf="buscando">🔍 Buscando...</span>
+      </button>
+    </div>
+
+    <!-- ============================================================
+         ERROR
+         ============================================================ -->
+    <div *ngIf="errorMensaje" class="error-box">
+      ⚠️ {{ errorMensaje }}
+    </div>
+
+    <!-- ============================================================
+         RESULTADOS
+         ============================================================ -->
+    <div *ngIf="haBuscado && !buscando" class="resultados-section">
+
+      <h2 class="resultados-title">
+        {{ resultados.length }} plato{{ resultados.length === 1 ? '' : 's' }} encontrado{{ resultados.length === 1 ? '' : 's' }}
+      </h2>
+
+      <div *ngIf="resultados.length === 0" class="sin-resultados">
+        <p>
+          😕 No encontramos platos con esos ingredientes.
+          Prueba a <strong>aumentar la tolerancia</strong> o seleccionar más ingredientes.
+        </p>
+      </div>
+
+      <!-- Cards horizontales compactas -->
+      <div *ngFor="let plato of resultados" class="plato-card">
+
+        <!-- Contenido principal del card -->
+        <div class="plato-card-main" (click)="toggleDetalle(plato.platillo_id)">
+
+          <div class="plato-card-img-container">
+            <img *ngIf="plato.imagen_url"
+                 [src]="plato.imagen_url"
+                 [alt]="plato.nombre"
+                 class="plato-card-img"
+                 loading="lazy"
+                 onerror="this.style.display='none'">
+          </div>
+
+          <div class="plato-card-info">
+            <h3 class="plato-card-nombre">{{ plato.nombre }}</h3>
+            <p class="plato-card-tiempo" *ngIf="plato.tiempo_prep">
+              🕒 {{ plato.tiempo_prep }}
+            </p>
+
+            <!-- Barra de match -->
+            <div class="match-bar">
+              <div class="match-bar-fill"
+                   [style.width.%]="plato.porcentaje_match"></div>
+            </div>
+
+            <div class="plato-card-stats">
+              <span class="stat-match">
+                ✅ {{ plato.porcentaje_match }}% match
+              </span>
+              <span class="stat-detail">
+                Tienes {{ plato.ingredientes_tiene }} de {{ plato.ingredientes_totales }}
+              </span>
+              <span *ngIf="plato.ingredientes_faltantes > 0" class="stat-faltantes">
+                ⚠️ Faltan {{ plato.ingredientes_faltantes }}
+              </span>
+              <span *ngIf="plato.ingredientes_faltantes === 0" class="stat-completo">
+                🎉 ¡Puedes cocinarlo ya!
+              </span>
+            </div>
+          </div>
+
+          <div class="plato-card-action">
+            <span class="plato-card-toggle">
+              {{ detalleExpandido === plato.platillo_id ? '▲' : '▼' }}
+            </span>
+          </div>
+
+        </div>
+
+        <!-- Detalle expandible inline -->
+        <div *ngIf="detalleExpandido === plato.platillo_id" class="plato-card-detalle">
+
+          <div *ngIf="cargandoDetalle" class="detalle-loading">
+            ⏳ Cargando detalles...
+          </div>
+
+          <ng-container *ngIf="!cargandoDetalle && detalleActual">
+
+            <!-- Insumos -->
+            <div class="prep-section prep-section-insumos">
+              <strong>🥘 Ingredientes de este plato:</strong>
+              <p>
+                <span *ngFor="let i of detalleActual.ingredientes; let last = last">
+                  <b>{{ i.nombre }}:</b> {{ formatearCantidad(i.cantidad, i.unidad) }}<span *ngIf="!last"> • </span>
+                </span>
+              </p>
+            </div>
+
+            <!-- Tips -->
+            <div *ngIf="detalleActual.recomendacion" class="prep-section prep-section-tips">
+              <strong>💡 Tips:</strong>
+              <p>{{ detalleActual.recomendacion }}</p>
+            </div>
+
+            <!-- Pasos -->
+            <div *ngIf="detalleActual.preparacion" class="prep-section prep-section-pasos">
+              <strong>📝 Pasos de Preparación:</strong>
+              <ol>
+                <li *ngFor="let paso of detalleActual.preparacion.split('\n')">
+                  {{ paso.replace(paso, paso) }}
+                </li>
+              </ol>
+            </div>
+
+            <!-- Acompañamientos -->
+            <div *ngIf="detalleActual.acompanamientos.length > 0" class="prep-section prep-section-acomp">
+              <strong>🍽️ Acompáñalo con...</strong>
+              <ul>
+                <li *ngFor="let a of detalleActual.acompanamientos">
+                  {{ a.tipo_icono }} <b>{{ a.tipo_nombre }}:</b> {{ a.sugerencia }}
+                </li>
+              </ul>
+            </div>
+
+            <!-- Te faltan (NUEVO) -->
+            <div *ngIf="obtenerFaltantes(detalleActual).length > 0" class="prep-section prep-section-faltantes">
+              <strong>🛒 Te faltan estos ingredientes ({{ obtenerFaltantes(detalleActual).length }}):</strong>
+              <ul>
+                <li *ngFor="let ing of obtenerFaltantes(detalleActual)">
+                  {{ ing.categoria_icono }} <b>{{ ing.nombre }}:</b>
+                  {{ formatearCantidad(ing.cantidad, ing.unidad) }}
+                </li>
+              </ul>
+            </div>
+
+            <!-- ¡Puedes cocinarlo ya! -->
+            <div *ngIf="obtenerFaltantes(detalleActual).length === 0" class="prep-section prep-section-completo">
+              <strong>🎉 ¡Tienes todo lo necesario!</strong>
+              <p>Puedes cocinar este plato ahora mismo.</p>
+            </div>
+
+          </ng-container>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
