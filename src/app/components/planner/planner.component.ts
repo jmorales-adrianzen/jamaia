@@ -8,6 +8,8 @@ import { UbicacionService } from 'src/app/services/ubicacion.service';
 import { MenuService } from 'src/app/services/menu.service';
 import { RouterModule } from '@angular/router';
 import { AnalyticsService } from 'src/app/services/analytics.service';
+import { MainMenuComponent } from 'src/app/components/main-menu/main-menu.component';
+
 import {
   PlatoCompleto,
   Ubicacion,
@@ -21,7 +23,7 @@ import {
 @Component({
   selector: 'app-planner',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, EnviarWhatsappModalComponent],
+  imports: [CommonModule, FormsModule, RouterModule, EnviarWhatsappModalComponent, MainMenuComponent],
   templateUrl: './planner.component.html',
   styleUrls: ['./planner.component.css']
 })

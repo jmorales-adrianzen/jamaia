@@ -889,27 +889,9 @@ li {
   flex-direction: column;
   align-items: center;
   gap: var(--jama-space-2);
-  margin-top: calc(var(--jama-space-6) * -1);
-  margin-bottom: calc(var(--jama-space-3) * 1.5);
+  margin-top: 0;
+  margin-bottom: var(--jama-space-4);
   text-align: center;
-}
-
-.jama-logo-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  transition: transform var(--jama-transition-fast);
-}
-
-.jama-logo-link:hover {
-  transform: scale(1.03);
-}
-
-.jama-logo-img {
-  height: 120px;
-  width: auto;
-  display: block;
 }
 
 .jama-h1 {

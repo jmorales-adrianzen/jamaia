@@ -48,4 +48,14 @@ export class LandingComponent implements OnInit {
     this.cerrarMenu();
     this.router.navigate(['/planner']);
   }
+
+  /**
+   * Trackea el clic en "Mi despensa" y navega a /despensa.
+   */
+  irAMiDespensa(): void {
+    this.analytics.track('click_probar');  // Reutilizamos el evento
+    this.cerrarMenu();
+    this.router.navigate(['/despensa']);
+  }  
+
 }

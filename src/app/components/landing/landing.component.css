@@ -614,9 +614,6 @@
 /* ============================================================
    FOOTER
    ============================================================ */
-/* ============================================================
-   FOOTER
-   ============================================================ */
 .landing-footer {
   background: var(--jama-surface-alt);
   border-top: 1px solid var(--jama-border);
@@ -697,6 +694,259 @@
   color: var(--jama-text-muted);
   margin: 0;
 }
+
+
+/* ============================================================
+   STEPS con 4 tarjetas
+   ============================================================ */
+.landing-steps-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 899px) {
+  .landing-steps-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 599px) {
+  .landing-steps-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   FEATURES con 5 tarjetas
+   ============================================================ */
+.landing-features-5 {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+@media (max-width: 1199px) {
+  .landing-features-5 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 899px) {
+  .landing-features-5 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 599px) {
+  .landing-features-5 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   SECCIÓN DESTACADA: MI DESPENSA
+   ============================================================ */
+.landing-despensa-section {
+  background: linear-gradient(135deg, var(--jama-brand-green-light) 0%, var(--jama-brand-gold-light) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-despensa-section::before {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.landing-despensa-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--jama-space-12);
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.landing-despensa-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--jama-space-4);
+}
+
+.landing-despensa-title {
+  font-family: var(--jama-font-display);
+  font-size: var(--jama-text-4xl);
+  font-weight: var(--jama-weight-extrabold);
+  color: var(--jama-brand-green);
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.landing-despensa-subtitle {
+  font-family: var(--jama-font-body);
+  font-size: var(--jama-text-lg);
+  color: var(--jama-text-secondary);
+  line-height: var(--jama-leading-relaxed);
+  margin: 0;
+  max-width: 520px;
+}
+
+.landing-despensa-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--jama-space-2);
+}
+
+.landing-despensa-features li {
+  font-family: var(--jama-font-body);
+  font-size: var(--jama-text-sm);
+  color: var(--jama-brand-green);
+  font-weight: var(--jama-weight-medium);
+}
+
+/* Mockup visual */
+.landing-despensa-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.landing-despensa-visual-mockup {
+  width: 100%;
+  max-width: 400px;
+  background: var(--jama-surface);
+  border-radius: var(--jama-radius-lg);
+  box-shadow: var(--jama-shadow-xl);
+  padding: var(--jama-space-4);
+  border: 1px solid var(--jama-border);
+}
+
+.mockup-header {
+  display: flex;
+  align-items: center;
+  gap: var(--jama-space-2);
+  padding: var(--jama-space-3);
+  background: linear-gradient(90deg, var(--jama-brand-green-light) 0%, var(--jama-brand-gold-light) 100%);
+  border-radius: var(--jama-radius-md);
+  margin-bottom: var(--jama-space-3);
+  font-family: var(--jama-font-display);
+  font-weight: var(--jama-weight-bold);
+  color: var(--jama-brand-green);
+  font-size: var(--jama-text-sm);
+}
+
+.mockup-emoji {
+  font-size: 18px;
+}
+
+.mockup-text {
+  flex: 1;
+}
+
+.mockup-count {
+  background: var(--jama-brand-green);
+  color: var(--jama-text-inverse);
+  padding: 2px 8px;
+  border-radius: var(--jama-radius-full);
+  font-size: var(--jama-text-xs);
+}
+
+.mockup-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--jama-space-1);
+  margin-bottom: var(--jama-space-3);
+}
+
+.mockup-item {
+  padding: var(--jama-space-2) var(--jama-space-3);
+  border-radius: var(--jama-radius-sm);
+  font-family: var(--jama-font-body);
+  font-size: var(--jama-text-xs);
+  color: var(--jama-text-secondary);
+  background: var(--jama-surface-alt);
+  border: 1px solid var(--jama-border);
+}
+
+.mockup-item.selected {
+  background: var(--jama-brand-green-light);
+  color: var(--jama-brand-green);
+  font-weight: var(--jama-weight-semibold);
+  border-color: var(--jama-brand-green);
+}
+
+.mockup-result {
+  padding: var(--jama-space-3);
+  background: linear-gradient(135deg, var(--jama-brand-gold-light) 0%, var(--jama-surface) 100%);
+  border-radius: var(--jama-radius-md);
+  border: 1px solid var(--jama-brand-gold);
+}
+
+.mockup-result-title {
+  font-family: var(--jama-font-display);
+  font-weight: var(--jama-weight-bold);
+  color: var(--jama-brand-green);
+  font-size: var(--jama-text-sm);
+  margin-bottom: var(--jama-space-2);
+}
+
+.mockup-result-bar {
+  height: 6px;
+  background: var(--jama-surface-alt);
+  border-radius: var(--jama-radius-full);
+  overflow: hidden;
+  margin-bottom: var(--jama-space-2);
+}
+
+.mockup-result-fill {
+  width: 71%;
+  height: 100%;
+  background: var(--jama-gradient-cta);
+  border-radius: var(--jama-radius-full);
+}
+
+.mockup-result-text {
+  font-family: var(--jama-font-body);
+  font-size: var(--jama-text-xs);
+  color: var(--jama-text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 899px) {
+  .landing-despensa-inner {
+    grid-template-columns: 1fr;
+    gap: var(--jama-space-8);
+    text-align: center;
+  }
+
+  .landing-despensa-copy {
+    align-items: center;
+  }
+
+  .landing-despensa-title {
+    font-size: var(--jama-text-3xl);
+  }
+
+  .landing-despensa-subtitle {
+    max-width: 100%;
+  }
+
+  .landing-despensa-features li {
+    text-align: left;
+  }
+
+  .landing-despensa-visual-mockup {
+    max-width: 340px;
+  }
+}
+
 
 /* === Responsive === */
 @media (max-width: 599px) {
