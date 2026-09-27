@@ -10,7 +10,7 @@
   <div class="country-group">
     <label for="country-select" class="country-label">
       <span class="icon">🌎</span>
-      <span>País:</span>
+      <span>En qué país te encuentras:</span>
     </label>
     <select id="selectPais" class="country-select" [(ngModel)]="paisActual" (change)="cambiarPais()">
       <option *ngFor="let p of paises" [value]="p.codigo_iso">
