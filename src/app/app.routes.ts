@@ -6,7 +6,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/landing/landing.component')
         .then(m => m.LandingComponent),
-    title: 'Jama — Cocina tu comida peruana y jamea según tu antojo'
+    title: 'Jama — Cocina tu menú y disfruta la comida peruana según tu antojo'
   },
   {
     path: 'planner',
