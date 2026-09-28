@@ -296,7 +296,11 @@ ejecutarGeneracion(): void {
           .join(' • ');
 
         const pasosArr = plato.preparacion
-          ? plato.preparacion.split(/\r?\n/).filter(p => p.trim() !== '')
+          ? plato.preparacion
+              .replace(/<br\s*\/?>/gi, '\n')     // 👈 NUEVO: convertir <br> a saltos
+              .split(/\r?\n/)
+              .map(p => p.trim())
+              .filter(p => p !== '')
           : [];
         const pasosHtml = pasosArr.length
           ? `<ol>${pasosArr.map(p => `<li>${p.replace(/^\d+[\.\)]\s*/, '')}</li>`).join('')}</ol>`
