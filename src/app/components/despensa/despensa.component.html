@@ -224,8 +224,8 @@
             <div *ngIf="detalleActual.preparacion" class="prep-section prep-section-pasos">
               <strong>📝 Pasos de Preparación:</strong>
               <ol>
-                <li *ngFor="let paso of detalleActual.preparacion.split('\n')">
-                  {{ paso.replace(paso, paso) }}
+                <li *ngFor="let paso of parsearPasos(detalleActual.preparacion)">
+                  {{ paso }}
                 </li>
               </ol>
             </div>

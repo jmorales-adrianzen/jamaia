@@ -306,4 +306,28 @@ obtenerFaltantes(plato: PlatoCompleto): IngredientePlato[] {
   getPlatoMatch(platilloId: number): PlatoMatch | undefined {
     return this.resultados.find(r => r.platillo_id === platilloId);
   }
+
+  // ============================================================
+  //  PARSEAR PASOS DE PREPARACIÓN
+  // ============================================================
+  /**
+   * Convierte el campo `preparacion` (que tiene formato con <br>
+   * y numeración "1. ...") en un array limpio de pasos.
+   */
+  parsearPasos(preparacion: string): string[] {
+    if (!preparacion) return [];
+
+    return preparacion
+      // Reemplazar <br> y <br/> y <br /> por salto de línea
+      .replace(/<br\s*\/?>/gi, '\n')
+      // Dividir por saltos de línea
+      .split('\n')
+      // Limpiar espacios en blanco
+      .map(p => p.trim())
+      // Filtrar líneas vacías
+      .filter(p => p.length > 0)
+      // Quitar numeración al inicio (1. 2. etc.)
+      .map(p => p.replace(/^\d+[\.\)]\s*/, ''));
+  }
+
 }
