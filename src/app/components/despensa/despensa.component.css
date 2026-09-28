@@ -665,6 +665,53 @@
 
 
 /* ============================================================
+   SECCIONES DE PASOS (con títulos)
+   ============================================================ */
+.prep-seccion {
+  margin-bottom: var(--jama-space-4);
+}
+
+.prep-seccion:last-child {
+  margin-bottom: 0;
+}
+
+.prep-seccion-titulo {
+  font-family: var(--jama-font-display);
+  font-size: var(--jama-text-sm);
+  font-weight: var(--jama-weight-bold);
+  color: var(--jama-success-hover);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 var(--jama-space-2) 0;
+  padding-bottom: var(--jama-space-1);
+  border-bottom: 1px dashed var(--jama-success);
+}
+
+.prep-seccion-pasos {
+  margin: 0;
+  padding-left: var(--jama-space-5);
+  list-style-position: outside;
+}
+
+.prep-seccion-pasos li {
+  margin-bottom: var(--jama-space-2);
+  color: var(--jama-success-hover);
+  line-height: var(--jama-leading-relaxed);
+  padding-left: var(--jama-space-1);
+}
+
+.prep-seccion-pasos li::marker {
+  color: var(--jama-success);
+  font-weight: var(--jama-weight-bold);
+}
+
+.prep-seccion-pasos li:last-child {
+  margin-bottom: 0;
+}
+
+
+
+/* ============================================================
    FALTANTES (en el detalle expandible)
    ============================================================ */
 .prep-section-faltantes {

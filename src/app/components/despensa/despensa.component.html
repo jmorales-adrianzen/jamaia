@@ -223,11 +223,15 @@
             <!-- Pasos -->
             <div *ngIf="detalleActual.preparacion" class="prep-section prep-section-pasos">
               <strong>📝 Pasos de Preparación:</strong>
-              <ol>
-                <li *ngFor="let paso of parsearPasos(detalleActual.preparacion)">
-                  {{ paso }}
-                </li>
-              </ol>
+
+              <div class="prep-seccion" *ngFor="let seccion of parsearPasos(detalleActual.preparacion)">
+                <h4 *ngIf="seccion.titulo" class="prep-seccion-titulo">
+                  {{ seccion.titulo }}
+                </h4>
+                <ol class="prep-seccion-pasos">
+                  <li *ngFor="let paso of seccion.pasos">{{ paso }}</li>
+                </ol>
+              </div>
             </div>
 
             <!-- Acompañamientos -->

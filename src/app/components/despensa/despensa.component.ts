@@ -307,27 +307,53 @@ obtenerFaltantes(plato: PlatoCompleto): IngredientePlato[] {
     return this.resultados.find(r => r.platillo_id === platilloId);
   }
 
-  // ============================================================
-  //  PARSEAR PASOS DE PREPARACIÓN
-  // ============================================================
-  /**
-   * Convierte el campo `preparacion` (que tiene formato con <br>
-   * y numeración "1. ...") en un array limpio de pasos.
-   */
-  parsearPasos(preparacion: string): string[] {
-    if (!preparacion) return [];
+// ============================================================
+//  PARSEAR PASOS DE PREPARACIÓN EN SECCIONES
+// ============================================================
+/**
+ * Convierte el campo `preparacion` en un array de secciones.
+ * Cada sección tiene:
+ *   - titulo: el encabezado (ej. "ANTES DE EMPEZAR")
+ *   - pasos: array de strings con los pasos
+ *
+ * Formato esperado del input:
+ *   "🔹 ANTES DE EMPEZAR:<br>1. Paso 1...<br>2. Paso 2...<br><br>🔹 SIGUIENTE SECCIÓN:<br>1. ..."
+ */
+parsearPasos(preparacion: string): { titulo: string; pasos: string[] }[] {
+  if (!preparacion) return [];
 
-    return preparacion
-      // Reemplazar <br> y <br/> y <br /> por salto de línea
-      .replace(/<br\s*\/?>/gi, '\n')
-      // Dividir por saltos de línea
-      .split('\n')
-      // Limpiar espacios en blanco
-      .map(p => p.trim())
-      // Filtrar líneas vacías
-      .filter(p => p.length > 0)
-      // Quitar numeración al inicio (1. 2. etc.)
-      .map(p => p.replace(/^\d+[\.\)]\s*/, ''));
+  const lineas = preparacion
+    .replace(/<br\s*\/?>/gi, '\n')
+    .split('\n')
+    .map(l => l.trim())
+    .filter(l => l.length > 0);
+
+  const secciones: { titulo: string; pasos: string[] }[] = [];
+  let seccionActual: { titulo: string; pasos: string[] } | null = null;
+
+  for (const linea of lineas) {
+    if (linea.startsWith('🔹')) {
+      // Nuevo encabezado de sección
+      seccionActual = {
+        titulo: linea.replace('🔹', '').trim(),
+        pasos: []
+      };
+      secciones.push(seccionActual);
+    } else if (seccionActual) {
+      // Es un paso de la sección actual
+      const paso = linea.replace(/^\d+[\.\)]\s*/, '');
+      seccionActual.pasos.push(paso);
+    } else {
+      // Pasos sueltos sin encabezado (fallback)
+      seccionActual = {
+        titulo: '',
+        pasos: [linea.replace(/^\d+[\.\)]\s*/, '')]
+      };
+      secciones.push(seccionActual);
+    }
   }
+
+  return secciones;
+}
 
 }
