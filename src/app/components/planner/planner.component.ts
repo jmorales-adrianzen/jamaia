@@ -290,21 +290,13 @@ ejecutarGeneracion(): void {
     if (resultado.platosConDetalle.length === 0) {
       htmlS = '<p style="text-align:center;color:#718096;">No has seleccionado ningún plato.</p>';
     } else {
+
       for (const { dia, plato } of resultado.platosConDetalle) {
         const insumos = plato.ingredientes
           .map(i => `<b>${i.nombre}:</b> ${this.menuService.formatearCantidad(i.cantidad * this.personas, i.unidad)}`)
           .join(' • ');
 
-        const pasosArr = plato.preparacion
-          ? plato.preparacion
-              .replace(/<br\s*\/?>/gi, '\n')     // 👈 NUEVO: convertir <br> a saltos
-              .split(/\r?\n/)
-              .map(p => p.trim())
-              .filter(p => p !== '')
-          : [];
-        const pasosHtml = pasosArr.length
-          ? `<ol>${pasosArr.map(p => `<li>${p.replace(/^\d+[\.\)]\s*/, '')}</li>`).join('')}</ol>`
-          : plato.preparacion;
+        const pasosHtml = this.generarHtmlPasos(plato.preparacion);
 
         const tipsHtml = plato.recomendacion
           ? `
@@ -313,7 +305,7 @@ ejecutarGeneracion(): void {
               <p>${plato.recomendacion}</p>
             </div>
           `
-          : '';
+          : ''; 
 
         const acompHtml = plato.acompanamientos.length > 0
           ? `
@@ -327,6 +319,7 @@ ejecutarGeneracion(): void {
             </div>
           `
           : '';
+      
 
         htmlS += `
           <div class="prep-card">
@@ -356,6 +349,50 @@ ejecutarGeneracion(): void {
     this.htmlSugerencias = this.sanitizer.bypassSecurityTrustHtml(htmlS);
     this.mostrarResultado = true;
   }
+
+  // ============================================================
+  //  GENERAR HTML DE PASOS (con secciones)
+  // ============================================================
+  private generarHtmlPasos(preparacion: string): string {
+    if (!preparacion) return '';
+
+    const lineas = preparacion
+      .replace(/<br\s*\/?>/gi, '\n')
+      .split('\n')
+      .map(l => l.trim())
+      .filter(l => l.length > 0);
+
+    interface Seccion { titulo: string; pasos: string[]; }
+    const secciones: Seccion[] = [];
+    let seccionActual: Seccion | null = null;
+
+    for (const linea of lineas) {
+      if (linea.startsWith('🔹')) {
+        seccionActual = {
+          titulo: linea.replace('🔹', '').trim(),
+          pasos: []
+        };
+        secciones.push(seccionActual);
+      } else if (seccionActual) {
+        seccionActual.pasos.push(linea.replace(/^\d+[\.\)]\s*/, ''));
+      } else {
+        seccionActual = {
+          titulo: '',
+          pasos: [linea.replace(/^\d+[\.\)]\s*/, '')]
+        };
+        secciones.push(seccionActual);
+      }
+    }
+
+    return secciones.map(s => `
+      <div class="prep-seccion">
+        ${s.titulo ? `<h4 class="prep-seccion-titulo">${s.titulo}</h4>` : ''}
+        <ol class="prep-seccion-pasos">
+          ${s.pasos.map(p => `<li>${p}</li>`).join('')}
+        </ol>
+      </div>
+    `).join('');
+  }  
 
   // ============================================================
   //  WHATSAPP — Abrir modal
