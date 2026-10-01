@@ -25,6 +25,7 @@ export class MainMenuComponent implements OnInit {
   // Opciones del menú
   readonly opciones = [
     { path: '/planner',   label: 'Menú Semanal',  icon: '📅' },
+    { path: '/deseas',    label: '¿Qué deseas comer?', icon: '🍽️' },
     { path: '/despensa',  label: 'Mi despensa',   icon: '🍳' }
   ];
 

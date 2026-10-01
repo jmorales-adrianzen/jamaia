@@ -13,7 +13,8 @@ export type EventType =
   | 'app_load'
   | 'click_probar'
   | 'click_generar'
-  | 'click_whatsapp';
+  | 'click_whatsapp'
+  | 'view_deseas';  
 
 // Estructura de datos geográficos
 interface GeoData {

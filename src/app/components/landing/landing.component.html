@@ -16,6 +16,7 @@
       <!-- Nav desktop -->
       <nav class="landing-nav" [class.open]="menuAbierto">
         <a (click)="scrollA('como-funciona')">Cómo funciona</a>
+        <a (click)="scrollA('deseas')">¿Qué deseas comer?</a>
         <a (click)="scrollA('features')">Beneficios</a>
         <a (click)="scrollA('faq')">Preguntas</a>
         <a class="landing-nav-cta" (click)="probarJama()">
@@ -180,6 +181,71 @@
       </div>
     </div>
   </section>
+
+<!-- ============================================================
+     SECCIÓN: ¿QUÉ DESEAS COMER?
+     ============================================================ -->
+<section id="deseas" class="landing-section landing-deseas-section">
+  <div class="landing-section-inner">
+    <div class="landing-deseas-inner">
+
+      <div class="landing-deseas-visual">
+        <!-- Mockup visual de la pantalla -->
+        <div class="landing-deseas-mockup">
+          <div class="mockup-consulta">
+            <span class="mockup-icon">🍽️</span>
+            <span class="mockup-text">"Algo con pollo y papas, sin arroz, con ensalada"</span>
+          </div>
+          <div class="mockup-resultado">
+            <span class="mockup-arrow">↓</span>
+            <div class="mockup-plato">
+              <span class="mockup-plato-emoji">🍗</span>
+              <div>
+                <div class="mockup-plato-nombre">Pollo a la plancha</div>
+                <div class="mockup-plato-match">🎯 87% coincidencia</div>
+              </div>
+            </div>
+            <div class="mockup-plato">
+              <span class="mockup-plato-emoji">🍲</span>
+              <div>
+                <div class="mockup-plato-nombre">Pollo guisado</div>
+                <div class="mockup-plato-match">🎯 81% coincidencia</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="landing-deseas-copy">
+        <span class="landing-hero-badge">🆕 Nueva funcionalidad</span>
+
+        <h2 class="landing-deseas-title">
+          Dinos qué se te antoja y te lo encontramos
+        </h2>
+
+        <p class="landing-deseas-subtitle">
+          Olvídate de pensar en menús. Escribe lo que deseas comer en
+          lenguaje natural — como se lo dirías a un amigo — y nuestra IA
+          te sugerirá los mejores platos para ese antojo.
+        </p>
+
+        <ul class="landing-deseas-features">
+          <li>✓ Búsqueda por texto libre en español</li>
+          <li>✓ Interpreta intenciones ("algo ligero", "sin arroz")</li>
+          <li>✓ Sugerencias personalizadas por país</li>
+          <li>✓ Ver recetas completas con tips y pasos</li>
+        </ul>
+
+        <div class="landing-hero-actions">
+          <a class="jama-btn-primary" routerLink="/deseas">
+            🍽️ Probar "¿Qué deseas comer?"
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
 
 
 <!-- ============================================================

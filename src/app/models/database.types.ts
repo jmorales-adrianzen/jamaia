@@ -470,6 +470,45 @@ export type Database = {
           },
         ]
       }
+      precios_ingredientes_historico: {
+        Row: {
+          activo: boolean | null
+          fecha_actualizacion: string | null
+          fecha_desactivacion: string | null
+          fuente: string | null
+          id: number
+          ingrediente_id: number
+          precio: number
+          tipo_precio_id: number
+          ubicacion_id: number
+          unidad_referencia: string
+        }
+        Insert: {
+          activo?: boolean | null
+          fecha_actualizacion?: string | null
+          fecha_desactivacion?: string | null
+          fuente?: string | null
+          id?: number
+          ingrediente_id: number
+          precio: number
+          tipo_precio_id: number
+          ubicacion_id: number
+          unidad_referencia: string
+        }
+        Update: {
+          activo?: boolean | null
+          fecha_actualizacion?: string | null
+          fecha_desactivacion?: string | null
+          fuente?: string | null
+          id?: number
+          ingrediente_id?: number
+          precio?: number
+          tipo_precio_id?: number
+          ubicacion_id?: number
+          unidad_referencia?: string
+        }
+        Relationships: []
+      }
       recomendaciones: {
         Row: {
           id: number
@@ -685,6 +724,40 @@ export type Database = {
           nombre: string
           precio_unitario: number
           unidad: string
+        }[]
+      }
+      match_platos: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          p_tipo?: string
+          p_ubicacion_id?: number
+          query_embedding: string
+        }
+        Returns: {
+          imagen_url: string
+          nombre: string
+          platillo_id: number
+          similarity: number
+          tiempo_prep: string
+        }[]
+      }
+      match_platos_con_filtros: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          p_excluir?: string[]
+          p_incluir?: string[]
+          p_tipo?: string
+          p_ubicacion_id?: number
+          query_embedding: string
+        }
+        Returns: {
+          imagen_url: string
+          nombre: string
+          platillo_id: number
+          similarity: number
+          tiempo_prep: string
         }[]
       }
     }
