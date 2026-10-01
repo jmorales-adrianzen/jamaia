@@ -741,6 +741,143 @@
 }
 
 /* ============================================================
+   SECCIÓN: ¿QUÉ DESEAS COMER?
+   ============================================================ */
+.landing-deseas-section {
+  background: var(--jama-surface);
+  position: relative;
+}
+
+.landing-deseas-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--jama-space-12);
+  align-items: center;
+}
+
+.landing-deseas-visual {
+  display: flex;
+  justify-content: center;
+}
+
+.landing-deseas-mockup {
+  width: 100%;
+  max-width: 400px;
+  background: linear-gradient(135deg, var(--jama-brand-green-light) 0%, var(--jama-brand-gold-light) 100%);
+  border-radius: var(--jama-radius-lg);
+  padding: var(--jama-space-5);
+  box-shadow: var(--jama-shadow-xl);
+  border: 1px solid var(--jama-brand-gold);
+}
+
+.mockup-consulta {
+  display: flex;
+  gap: var(--jama-space-2);
+  padding: var(--jama-space-3) var(--jama-space-4);
+  background: var(--jama-surface);
+  border: 2px solid var(--jama-brand-green);
+  border-radius: var(--jama-radius-md);
+  margin-bottom: var(--jama-space-4);
+  font-family: var(--jama-font-body);
+  font-size: var(--jama-text-sm);
+  color: var(--jama-text);
+  font-style: italic;
+}
+
+.mockup-icon { font-size: 20px; }
+
+.mockup-arrow {
+  display: block;
+  text-align: center;
+  font-size: 24px;
+  color: var(--jama-brand-gold);
+  margin: var(--jama-space-3) 0;
+}
+
+.mockup-resultado {
+  display: flex;
+  flex-direction: column;
+  gap: var(--jama-space-2);
+}
+
+.mockup-plato {
+  display: flex;
+  align-items: center;
+  gap: var(--jama-space-3);
+  padding: var(--jama-space-3);
+  background: var(--jama-surface);
+  border-radius: var(--jama-radius-md);
+  border: 1px solid var(--jama-border);
+}
+
+.mockup-plato-emoji { font-size: 24px; }
+
+.mockup-plato-nombre {
+  font-family: var(--jama-font-display);
+  font-weight: var(--jama-weight-semibold);
+  font-size: var(--jama-text-sm);
+  color: var(--jama-brand-green);
+}
+
+.mockup-plato-match {
+  font-family: var(--jama-font-body);
+  font-size: var(--jama-text-xs);
+  color: var(--jama-success);
+  font-weight: var(--jama-weight-bold);
+}
+
+.landing-deseas-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--jama-space-4);
+}
+
+.landing-deseas-title {
+  font-family: var(--jama-font-display);
+  font-size: var(--jama-text-4xl);
+  font-weight: var(--jama-weight-extrabold);
+  color: var(--jama-brand-green);
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.landing-deseas-subtitle {
+  font-family: var(--jama-font-body);
+  font-size: var(--jama-text-lg);
+  color: var(--jama-text-secondary);
+  line-height: var(--jama-leading-relaxed);
+  margin: 0;
+}
+
+.landing-deseas-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--jama-space-2);
+}
+
+.landing-deseas-features li {
+  font-family: var(--jama-font-body);
+  font-size: var(--jama-text-sm);
+  color: var(--jama-brand-green);
+  font-weight: var(--jama-weight-medium);
+}
+
+@media (max-width: 899px) {
+  .landing-deseas-inner {
+    grid-template-columns: 1fr;
+    gap: var(--jama-space-8);
+    text-align: center;
+  }
+  .landing-deseas-copy { align-items: center; }
+  .landing-deseas-title { font-size: var(--jama-text-3xl); }
+  .landing-deseas-features li { text-align: left; }
+}
+
+/* ============================================================
    SECCIÓN DESTACADA: MI DESPENSA
    ============================================================ */
 .landing-despensa-section {

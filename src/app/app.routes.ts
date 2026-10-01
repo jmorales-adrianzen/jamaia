@@ -21,6 +21,13 @@ export const routes: Routes = [
       import('./components/despensa/despensa.component')
         .then(m => m.DespensaComponent),
     title: 'Mi despensa — Jama'
+  }, 
+  {
+    path: 'deseas',
+    loadComponent: () =>
+      import('./components/deseas/deseas.component')
+        .then(m => m.DeseasComponent),
+    title: '¿Qué deseas comer? — Jama'
   },
   {
     path: '**',

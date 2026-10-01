@@ -1,0 +1,187 @@
+<app-main-menu></app-main-menu>
+
+<div class="deseas-container">
+  <div class="deseas-inner">
+
+    <!-- HEADER -->
+    <header class="deseas-header">
+      <h1 class="deseas-title">🍽️ ¿Qué deseas comer?</h1>
+      <p class="deseas-subtitle">
+        Cuéntanos qué se te antoja y la IA te mostrará las mejores opciones
+        para tu próxima comida.
+      </p>
+    </header>
+
+    <!-- INPUT DE CONSULTA -->
+    <div class="consulta-box">
+      <textarea
+        class="consulta-input"
+        placeholder="Ej: algo con pollo y papa, sin arroz, con ensalada"
+        [(ngModel)]="consulta"
+        (keydown.enter)="buscar(); $event.preventDefault()"
+        rows="3"
+        maxlength="300"></textarea>
+
+      <div class="consulta-footer">
+        <span class="consulta-contador">{{ consulta.length }} / 300</span>
+
+        <div class="consulta-actions">
+          <button
+            *ngIf="consulta.length > 0"
+            class="btn-limpiar"
+            type="button"
+            (click)="limpiar()">
+            ✕ Limpiar
+          </button>
+          <button
+            class="btn-buscar"
+            type="button"
+            [disabled]="!consulta.trim() || buscando"
+            (click)="buscar()">
+            <span *ngIf="!buscando">🔍 Buscar qué comer</span>
+            <span *ngIf="buscando">⏳ Analizando...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SELECTOR DE PAÍS -->
+    <div class="pais-selector">
+      <label class="pais-label">🌎 País:</label>
+      <select class="pais-select"
+              [(ngModel)]="paisActual"
+              (change)="cambiarPais()">
+        <option *ngFor="let p of paises" [value]="p.codigo_iso">
+          {{ p.codigo_iso === 'PE' ? '🇵🇪' : '🇦🇷' }} {{ p.nombre }}
+        </option>
+      </select>
+    </div>
+
+    <!-- EJEMPLOS INSPIRADORES (solo si no se ha buscado) -->
+    <div *ngIf="!haBuscado" class="ejemplos-box">
+      <h3 class="ejemplos-titulo">💡 Ideas para inspirarte:</h3>
+      <div class="ejemplos-grid">
+        <button
+          *ngFor="let ej of ejemplos"
+          class="ejemplo-chip"
+          type="button"
+          (click)="usarEjemplo(ej)">
+          {{ ej }}
+        </button>
+      </div>
+    </div>
+
+<!-- SUGERENCIAS DE CORRECCIÓN -->
+<div *ngIf="sugerenciasBusqueda.length > 0 && !buscando" class="sugerencias-box">
+  <div class="sugerencias-header">
+    <span class="sugerencias-icon">💡</span>
+    <span class="sugerencias-titulo">
+      No reconocemos {{ sugerenciasBusqueda.length === 1 ? 'este término' : 'estos términos' }}:
+    </span>
+  </div>
+  <ul class="sugerencias-lista">
+    <li *ngFor="let sug of sugerenciasBusqueda">
+      <strong>"{{ sug.termino }}"</strong>
+      <ng-container *ngIf="sug.sugerencias.length > 0">
+        — ¿Quisiste decir:
+        <span class="sugerencias-alternativas">
+          <button *ngFor="let alt of sug.sugerencias; let last = last"
+                  type="button"
+                  class="sugerencia-chip"
+                  (click)="reemplazarTermino(sug.termino, alt)">
+            {{ alt }}<span *ngIf="!last">,</span>
+          </button>
+        </span>?
+      </ng-container>
+    </li>
+  </ul>
+</div>
+
+<!-- MENSAJE DE ERROR -->
+<div *ngIf="errorMensaje" class="error-box">
+  ⚠️ {{ errorMensaje }}
+</div>
+
+    <!-- RESULTADOS -->
+    <div *ngIf="haBuscado && !buscando" class="resultados-section">
+      <h2 class="resultados-titulo" *ngIf="resultados.length > 0">
+        🎯 Encontramos {{ resultados.length }} plato{{ resultados.length === 1 ? '' : 's' }} que te pueden gustar
+      </h2>
+
+      <div *ngFor="let plato of resultados" class="plato-card">
+        <div class="plato-card-main" (click)="toggleDetalle(plato.platillo_id)">
+
+          <div class="plato-card-img-container">
+            <img *ngIf="plato.imagen_url"
+                 [src]="plato.imagen_url"
+                 [alt]="plato.nombre"
+                 class="plato-card-img"
+                 loading="lazy"
+                 onerror="this.style.display='none'">
+          </div>
+
+          <div class="plato-card-info">
+            <h3 class="plato-card-nombre">{{ plato.nombre }}</h3>
+            <p class="plato-card-tiempo" *ngIf="plato.tiempo_prep">
+              🕒 {{ plato.tiempo_prep }}
+            </p>
+            <div class="match-bar">
+              <div class="match-bar-fill" [style.width.%]="plato.porcentaje_match"></div>
+            </div>
+            <div class="plato-card-stats">
+              <span class="stat-match">🎯 {{ plato.porcentaje_match }}% coincidencia</span>
+            </div>
+          </div>
+
+          <div class="plato-card-action">
+            <span class="plato-card-toggle">
+              {{ detalleExpandido === plato.platillo_id ? '▲' : '▼' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Detalle expandible -->
+        <div *ngIf="detalleExpandido === plato.platillo_id" class="plato-card-detalle">
+          <div *ngIf="cargandoDetalle" class="detalle-loading">⏳ Cargando detalles...</div>
+
+          <ng-container *ngIf="!cargandoDetalle && detalleActual">
+            <div class="prep-section prep-section-insumos">
+              <strong>🥘 Ingredientes de este plato:</strong>
+              <p>
+                <span *ngFor="let i of detalleActual.ingredientes; let last = last">
+                  <b>{{ i.nombre }}:</b> {{ formatearCantidad(i.cantidad, i.unidad) }}<span *ngIf="!last"> • </span>
+                </span>
+              </p>
+            </div>
+
+            <div *ngIf="detalleActual.recomendacion" class="prep-section prep-section-tips">
+              <strong>💡 Tips:</strong>
+              <p>{{ detalleActual.recomendacion }}</p>
+            </div>
+
+            <div *ngIf="detalleActual.preparacion" class="prep-section prep-section-pasos">
+              <strong>📝 Pasos de Preparación:</strong>
+              <div *ngFor="let seccion of parsearPasos(detalleActual.preparacion)" class="prep-seccion">
+                <h4 *ngIf="seccion.titulo" class="prep-seccion-titulo">{{ seccion.titulo }}</h4>
+                <ol class="prep-seccion-pasos">
+                  <li *ngFor="let paso of seccion.pasos">{{ paso }}</li>
+                </ol>
+              </div>
+            </div>
+
+            <div *ngIf="detalleActual.acompanamientos.length > 0" class="prep-section prep-section-acomp">
+              <strong>🍽️ Acompáñalo con...</strong>
+              <ul>
+                <li *ngFor="let a of detalleActual.acompanamientos">
+                  {{ a.tipo_icono }} <b>{{ a.tipo_nombre }}:</b> {{ a.sugerencia }}
+                </li>
+              </ul>
+            </div>
+          </ng-container>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
