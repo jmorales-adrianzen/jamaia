@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -19,6 +19,8 @@ import {
   CategoriaDespensa,
   IngredienteDespensa
 } from 'src/app/models/plato.model';
+
+
 
 @Component({
   selector: 'app-planner',
@@ -66,17 +68,56 @@ export class PlannerComponent implements OnInit {
   htmlCompras: string = '';
   htmlSugerencias: SafeHtml | string = '';
 
-    // ===== Modal WhatsApp =====
+  // ===== Modal WhatsApp =====
   mostrarModalWhatsapp: boolean = false;
   platosSeleccionados: { dia: string; plato: PlatoCompleto }[] = [];
   comprasDetalladas: ItemCompra[] = [];
+
+  // ============================================================
+  // COMBO CON BUSCADOR POR DÍA
+  // ============================================================
+  comboAbierto: { [dia: string]: boolean } = {};
+  textoBusqueda: { [dia: string]: string } = {};
+  indiceResaltado: { [dia: string]: number } = {};
+  private cerrarComboTimer: any = null;
+
+  // Lista filtrada de "Platos de Fondo" (categoría_id = 1)
+  platosFondoDisponibles: PlatoCompleto[] = [];
 
   constructor(
     private sanitizer: DomSanitizer,
     private ubicacionService: UbicacionService,
     private menuService: MenuService,
     private analytics: AnalyticsService
-  ) {}
+  ) { }
+
+  // Cerrar al hacer click fuera (pero después de focus)
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement | null;
+    if (!target) return;
+
+    if (!target.closest('.combobox')) {
+      this.diasKeys.forEach(d => this.comboAbierto[d] = false);
+    }
+  }
+
+  // Cerrar el combo solo cuando el foco sale del contenedor
+  @HostListener('document:focusin', ['$event'])
+  onDocumentFocusIn(event: FocusEvent): void {
+    const target = event.target as HTMLElement | null;
+    if (!target) return;
+
+    // Si el foco entró a un .combobox, dejamos ese abierto y cerramos los demás
+    const combo = target.closest('.combobox');
+
+    this.diasKeys.forEach(dia => {
+      if (!combo) {
+        this.comboAbierto[dia] = false;
+      }
+    });
+  }
+
 
   async ngOnInit(): Promise<void> {
     await this.cargarPaises();
@@ -108,6 +149,14 @@ export class PlannerComponent implements OnInit {
       this.platosDisponibles = platos;
       this.platoMap = new Map(platos.map(p => [p.platillo_id, p]));
 
+      //LOG temportal paa ver listado de platos de fondo
+      console.log('Platos totales:', platos.length);
+      console.log('Platos de fondo (cat 1):', platos.filter(p => p.categoria_id === 1).length);
+      console.log('Categorías presentes:', [...new Set(platos.map(p => p.categoria_id))]);
+
+      // 👇 NUEVO: filtrar sólo Platos de Fondo (categoria_id === 1)
+      this.platosFondoDisponibles = platos.filter(p => p.categoria_id === 1);
+
       const mapa = new Map<number, IngredienteDespensa>();
       for (const p of platos) {
         for (const i of p.ingredientes) {
@@ -133,6 +182,17 @@ export class PlannerComponent implements OnInit {
       this.selectAllChecked = false;
       this.filtroDespensa = '';
       this.menuSemanal = this.menuService.crearSemanaVacia();
+
+      // 👇 NUEVO: resetear estados de combos
+      this.comboAbierto = {};
+      this.textoBusqueda = {};
+      this.indiceResaltado = {};
+      this.diasKeys.forEach(d => {
+        this.comboAbierto[d] = false;
+        this.textoBusqueda[d] = '';
+        this.indiceResaltado[d] = 0;
+      });
+
       this.mostrarResultado = false;
       this.htmlCompras = '';
       this.htmlSugerencias = '';
@@ -170,6 +230,204 @@ export class PlannerComponent implements OnInit {
       cat.items.sort((a, b) => a.nombre.localeCompare(b.nombre))
     );
   }
+
+
+  // ============================================================
+  // COMBOBOX CON BUSCADOR Y NAVEGACIÓN POR TECLADO
+  // ============================================================
+
+  abrirCombo(dia: DiaSemana): void {
+    // Cerrar los demás combos
+    this.diasKeys.forEach(d => {
+      if (d !== dia) this.comboAbierto[d] = false;
+    });
+
+    this.comboAbierto[dia] = true;
+
+    // Al abrir: si hay plato seleccionado, dejar su nombre; si no, limpiar
+    if (this.menuSemanal[dia] !== null) {
+      const p = this.platoMap.get(this.menuSemanal[dia]!);
+      this.textoBusqueda[dia] = p ? p.nombre : '';
+      // Resaltar la opción seleccionada
+      const idx = this.filtrarPlatosPorTexto(this.textoBusqueda[dia])
+        .findIndex(x => x.platillo_id === this.menuSemanal[dia]);
+      this.indiceResaltado[dia] = idx >= 0 ? idx + 1 : 0;
+    } else {
+      this.textoBusqueda[dia] = '';
+      this.indiceResaltado[dia] = 0;
+    }
+  }
+
+  cerrarCombo(dia: DiaSemana): void {
+    this.comboAbierto[dia] = false;
+
+    // Solo sincroniza el texto con el plato seleccionado si el texto actual
+    // NO coincide con ninguna búsqueda en curso
+    const textoActual = this.textoBusqueda[dia] ?? '';
+    const coincideAlgunaOpcion = this.filtrarPlatosPorTexto(textoActual).length > 0;
+
+    if (this.menuSemanal[dia] !== null) {
+      const p = this.platoMap.get(this.menuSemanal[dia]!);
+      if (p && p.nombre === textoActual) {
+        // El texto visible ya coincide con el plato → no hacer nada
+        return;
+      }
+      this.textoBusqueda[dia] = p ? p.nombre : '';
+    } else if (!coincideAlgunaOpcion) {
+      // El usuario escribió algo que no es un plato → limpiar
+      this.textoBusqueda[dia] = '';
+    }
+  }
+
+  /** Alterna abierto/cerrado al hacer click en la flecha */
+  toggleCombo(dia: DiaSemana, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (this.comboAbierto[dia]) {
+      this.comboAbierto[dia] = false;
+    } else {
+      this.abrirCombo(dia);
+    }
+  }
+
+  onBuscar(dia: DiaSemana): void {
+    this.comboAbierto[dia] = true;
+    this.indiceResaltado[dia] = 0;   // reset al inicio de la lista
+  }
+
+  filtrarPlatosPorTexto(texto: string): PlatoCompleto[] {
+    const t = (texto ?? '').trim().toLowerCase();
+    if (!t) return this.platosFondoDisponibles;
+    return this.platosFondoDisponibles.filter(p =>
+      p.nombre.toLowerCase().includes(t)
+    );
+  }
+
+  seleccionarPlato(dia: DiaSemana, platilloId: number | null): void {
+    this.menuSemanal[dia] = platilloId;
+
+    if (platilloId === null) {
+      this.textoBusqueda[dia] = '';
+    } else {
+      const p = this.platoMap.get(platilloId);
+      this.textoBusqueda[dia] = p ? p.nombre : '';
+    }
+
+    this.comboAbierto[dia] = false;
+  }
+
+  /** Limpia la selección actual del día */
+  limpiarSeleccion(dia: DiaSemana, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.menuSemanal[dia] = null;
+    this.textoBusqueda[dia] = '';
+    this.comboAbierto[dia] = false;
+  }
+
+
+  /**
+   * Maneja el teclado dentro del combobox:
+   *   ↓ / ↑      → mueve el resaltado
+   *   Enter      → confirma la opción resaltada
+   *   Esc        → cierra sin cambiar
+   *   Tab        → cierra y salta al siguiente combo/día
+   *   Backspace  → si no hay texto, limpia la selección
+   */
+  onKeydownCombo(event: KeyboardEvent, dia: DiaSemana, idxDia: number): void {
+    const opciones = this.filtrarPlatosPorTexto(this.textoBusqueda[dia]);
+    const totalOpciones = opciones.length + 1; // +1 por la opción "Ninguno"
+
+    switch (event.key) {
+      case 'ArrowDown': {
+        event.preventDefault();
+        if (!this.comboAbierto[dia]) {
+          this.abrirCombo(dia);
+          return;
+        }
+        this.indiceResaltado[dia] = Math.min(
+          this.indiceResaltado[dia] + 1,
+          totalOpciones - 1
+        );
+        this.scrollOpcionVisible(dia);
+        break;
+      }
+
+      case 'ArrowUp': {
+        event.preventDefault();
+        if (!this.comboAbierto[dia]) {
+          this.abrirCombo(dia);
+          return;
+        }
+        this.indiceResaltado[dia] = Math.max(this.indiceResaltado[dia] - 1, 0);
+        this.scrollOpcionVisible(dia);
+        break;
+      }
+
+      case 'Enter': {
+        event.preventDefault();
+        if (!this.comboAbierto[dia]) {
+          this.abrirCombo(dia);
+          return;
+        }
+        const i = this.indiceResaltado[dia];
+        if (i === 0) {
+          this.seleccionarPlato(dia, null);
+        } else {
+          const p = opciones[i - 1];
+          if (p) this.seleccionarPlato(dia, p.platillo_id);
+        }
+        // Mover el foco al siguiente día (comportamiento "confirmar y avanzar")
+        this.enfocarSiguienteDia(idxDia);
+        break;
+      }
+
+      case 'Escape': {
+        event.preventDefault();
+        this.cerrarCombo(dia);
+        break;
+      }
+
+      case 'Tab': {
+        // Permitir el comportamiento nativo (salta al siguiente input),
+        // pero cerrar el combo abierto
+        this.cerrarCombo(dia);
+        break;
+      }
+
+      case 'Backspace': {
+        if ((this.textoBusqueda[dia] ?? '').length === 0) {
+          this.menuSemanal[dia] = null;
+        }
+        break;
+      }
+    }
+  }
+
+  /** Enfoca el input del siguiente día (para navegar con Enter) */
+  private enfocarSiguienteDia(idxActual: number): void {
+    const siguiente = this.diasKeys[idxActual + 1];
+    if (!siguiente) return;
+
+    // Esperar al siguiente ciclo de render para que el combo previo se cierre
+    setTimeout(() => {
+      const input = document.getElementById('combo-' + siguiente) as HTMLInputElement | null;
+      input?.focus();
+      // Abrir el siguiente combo automáticamente para agilizar la selección
+      this.abrirCombo(siguiente);
+    }, 0);
+  }
+
+  /** Asegura que la opción resaltada esté visible dentro del scroll del panel */
+  private scrollOpcionVisible(dia: DiaSemana): void {
+    setTimeout(() => {
+      const id = 'opcion-' + dia + '-' + this.indiceResaltado[dia];
+      const el = document.getElementById(id);
+      el?.scrollIntoView({ block: 'nearest' });
+    }, 0);
+  }
+
 
   async cambiarPais(): Promise<void> {
     const pais = this.paises.find(p => p.codigo_iso === this.paisActual);
@@ -212,18 +470,28 @@ export class PlannerComponent implements OnInit {
   }
 
   seleccionarAleatorio(): void {
-    if (this.platosDisponibles.length === 0) return;
-    const ids = this.platosDisponibles.map(p => p.platillo_id);
+    if (this.platosFondoDisponibles.length === 0) return;
+
+    const ids = this.platosFondoDisponibles.map(p => p.platillo_id);
     const mezcla = [...ids].sort(() => Math.random() - 0.5);
 
     this.diasKeys.forEach((dia, i) => {
-      this.menuSemanal[dia] = mezcla[i] ?? null;
+      const id = mezcla[i] ?? null;
+      this.menuSemanal[dia] = id;
+
+      // Sincronizar el texto visible del combo
+      if (id !== null) {
+        const p = this.platoMap.get(id);
+        this.textoBusqueda[dia] = p ? p.nombre : '';
+      } else {
+        this.textoBusqueda[dia] = '';
+      }
     });
   }
 
   get todasExpandidas(): boolean {
     return this.categoriasDespensa.length > 0 &&
-           this.categoriasDespensa.every(cat => cat.expandida);
+      this.categoriasDespensa.every(cat => cat.expandida);
   }
 
   toggleExpandirTodas(): void {
@@ -247,15 +515,15 @@ export class PlannerComponent implements OnInit {
     });
   }
 
-ejecutarGeneracion(): void {
-  this.analytics.track('click_generar');   // 👈 NUEVO
-  this.mostrarResultado = false;
-  this.cargando = true;
-  setTimeout(() => {
-    this.cargando = false;
-    this.generarPlanificacion();
-  }, 800);
-}
+  ejecutarGeneracion(): void {
+    this.analytics.track('click_generar');   // 👈 NUEVO
+    this.mostrarResultado = false;
+    this.cargando = true;
+    setTimeout(() => {
+      this.cargando = false;
+      this.generarPlanificacion();
+    }, 800);
+  }
 
   private generarPlanificacion(): void {
     const resultado: ResultadoMenu = this.menuService.calcularMenu(
@@ -267,7 +535,7 @@ ejecutarGeneracion(): void {
 
     // 👇 NUEVO: guardar datos para el modal
     this.comprasDetalladas = resultado.compras;
-    this.platosSeleccionados = resultado.platosConDetalle;    
+    this.platosSeleccionados = resultado.platosConDetalle;
 
     this.comprasGlobales = {};
     for (const c of resultado.compras) {
@@ -305,7 +573,7 @@ ejecutarGeneracion(): void {
               <p>${plato.recomendacion}</p>
             </div>
           `
-          : ''; 
+          : '';
 
         const acompHtml = plato.acompanamientos.length > 0
           ? `
@@ -319,7 +587,7 @@ ejecutarGeneracion(): void {
             </div>
           `
           : '';
-      
+
 
         htmlS += `
           <div class="prep-card">
@@ -392,7 +660,7 @@ ejecutarGeneracion(): void {
         </ol>
       </div>
     `).join('');
-  }  
+  }
 
   // ============================================================
   //  WHATSAPP — Abrir modal

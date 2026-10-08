@@ -29,22 +29,78 @@
     </div>
   </div>
 
-  <!-- Menú Semanal -->
-  <div class="section-header">
-    <h2>📅 Menú Semanal</h2>
-    <button class="btn-random" (click)="seleccionarAleatorio()">🎲 Seleccionar Platos Aleatoriamente</button>
-  </div>
-  <div class="days-grid">
-    <div class="day-box" *ngFor="let dia of diasKeys">
-      <label>{{ dia | titlecase }}:</label>
-      <select [id]="dia" class="select-plato" [(ngModel)]="menuSemanal[dia]">
-        <option [ngValue]="null">— Ninguno / Descanso —</option>
-        <option *ngFor="let p of platosDisponibles" [ngValue]="p.platillo_id">
+<!-- Menú Semanal -->
+<div class="section-header">
+  <h2>📅 Menú Semanal</h2>
+  <button class="btn-random" (click)="seleccionarAleatorio()">🎲 Seleccionar Platos Aleatoriamente</button>
+</div>
+
+<div class="days-grid">
+  <div class="day-box" *ngFor="let dia of diasKeys; let idx = index">
+    <label [for]="'combo-' + dia">{{ dia | titlecase }}:</label>
+
+    <div class="combobox" [class.abierto]="comboAbierto[dia]">
+      <!-- Input visible con rol ARIA de combobox -->
+      <input
+        type="text"
+        [id]="'combo-' + dia"
+        class="combobox-input"
+        role="combobox"
+        [attr.aria-expanded]="comboAbierto[dia]"
+        [attr.aria-controls]="'listbox-' + dia"
+        [attr.aria-activedescendant]="
+          indiceResaltado[dia] >= 0 ? 'opcion-' + dia + '-' + indiceResaltado[dia] : null
+        "
+        autocomplete="off"
+        [placeholder]="'Buscar plato...'"
+        [(ngModel)]="textoBusqueda[dia]"
+        (focus)="abrirCombo(dia)"
+        (input)="onBuscar(dia)"
+        (keydown)="onKeydownCombo($event, dia, idx)"
+      />
+
+      <span class="combobox-arrow" aria-hidden="true">▾</span>
+
+      <!-- Lista flotante (no expande el layout) -->
+      <ul
+        class="combobox-lista"
+        role="listbox"
+        [id]="'listbox-' + dia"
+        *ngIf="comboAbierto[dia]"
+      >
+        <li
+          class="combobox-opcion combobox-opcion-vacia"
+          role="option"
+          [id]="'opcion-' + dia + '-0'"
+          [class.resaltado]="indiceResaltado[dia] === 0"
+          [class.seleccionado]="menuSemanal[dia] === null"
+          (mousedown)="seleccionarPlato(dia, null)"
+          (mouseenter)="indiceResaltado[dia] = 0">
+          — Ninguno / Descanso —
+        </li>
+
+        <li
+          *ngFor="let p of filtrarPlatosPorTexto(textoBusqueda[dia]); let i = index"
+          class="combobox-opcion"
+          role="option"
+          [id]="'opcion-' + dia + '-' + (i + 1)"
+          [class.resaltado]="indiceResaltado[dia] === (i + 1)"
+          [class.seleccionado]="menuSemanal[dia] === p.platillo_id"
+          (mousedown)="seleccionarPlato(dia, p.platillo_id)"
+          (mouseenter)="indiceResaltado[dia] = (i + 1)">
           {{ p.nombre }}
-        </option>
-      </select>
+        </li>
+
+        <li
+          *ngIf="filtrarPlatosPorTexto(textoBusqueda[dia]).length === 0"
+          class="combobox-opcion combobox-sin-resultados"
+          role="presentation">
+          Sin resultados
+        </li>
+      </ul>
     </div>
   </div>
+</div>
 
   <!-- Despensa -->
   <h2>🥫 ¿Qué ingredientes YA tienes en tu despensa?</h2>
