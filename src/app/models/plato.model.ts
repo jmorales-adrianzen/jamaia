@@ -28,6 +28,7 @@ export interface PlatoCompleto {
   preparacion: string;
   imagen_url: string;
   tiempo_prep: string;
+  categoria_id: number | null;   
   recomendacion: string | null;
   ingredientes: IngredientePlato[];
   acompanamientos: RecomendacionAcompanamiento[];

@@ -5,8 +5,8 @@
 /* ============================================================
    CONTENEDOR GENERAL
    ============================================================ */
-.container { 
-  max-width: 800px; 
+.container {
+  max-width: 800px;
   background: var(--jama-surface);
   padding: var(--jama-space-5) var(--jama-space-6);
   border-radius: var(--jama-radius-xl);
@@ -14,10 +14,10 @@
   margin: var(--jama-space-3) auto;
 }
 
-h1 { 
+h1 {
   color: var(--jama-brand-green);
   font-family: var(--jama-font-display);
-  text-align: center; 
+  text-align: center;
   margin-top: var(--jama-space-1);
   margin-bottom: var(--jama-space-5);
   font-size: var(--jama-text-3xl);
@@ -25,7 +25,7 @@ h1 {
   line-height: var(--jama-leading-tight);
 }
 
-h2 { 
+h2 {
   color: var(--jama-brand-green);
   font-family: var(--jama-font-display);
   border-bottom: 2px solid var(--jama-brand-gold);
@@ -39,10 +39,10 @@ h2 {
 /* ============================================================
    SELECTOR DE PAÍS
    ============================================================ */
-.country-group { 
-  display: flex; 
-  align-items: center; 
-  justify-content: space-between; 
+.country-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background: var(--jama-brand-gold-light);
   padding: var(--jama-space-3) var(--jama-space-5);
   border-radius: var(--jama-radius-lg);
@@ -52,17 +52,17 @@ h2 {
   box-sizing: border-box;
 }
 
-.country-label { 
+.country-label {
   font-family: var(--jama-font-display);
   font-weight: var(--jama-weight-semibold);
   color: var(--jama-brand-green);
   font-size: var(--jama-text-base);
-  display: flex; 
-  align-items: center; 
+  display: flex;
+  align-items: center;
   gap: var(--jama-space-1);
 }
 
-.country-select { 
+.country-select {
   padding: var(--jama-space-2) var(--jama-space-3);
   border: 1px solid var(--jama-border-strong);
   border-radius: var(--jama-radius-sm);
@@ -71,8 +71,8 @@ h2 {
   font-size: var(--jama-text-sm);
   font-weight: var(--jama-weight-semibold);
   color: var(--jama-text);
-  outline: none; 
-  cursor: pointer; 
+  outline: none;
+  cursor: pointer;
   transition: all var(--jama-transition-fast);
   min-height: 40px;
 }
@@ -85,10 +85,10 @@ h2 {
 /* ============================================================
    CONTADOR DE PERSONAS
    ============================================================ */
-.counter-group { 
-  display: flex; 
-  align-items: center; 
-  justify-content: space-between; 
+.counter-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background: var(--jama-info-light);
   padding: var(--jama-space-3) var(--jama-space-5);
   border-radius: var(--jama-radius-lg);
@@ -97,32 +97,32 @@ h2 {
   box-sizing: border-box;
 }
 
-.counter-label { 
+.counter-label {
   font-family: var(--jama-font-display);
   font-weight: var(--jama-weight-semibold);
   color: var(--jama-brand-green);
   font-size: var(--jama-text-base);
 }
 
-.counter-controls { 
-  display: flex; 
-  align-items: center; 
+.counter-controls {
+  display: flex;
+  align-items: center;
   gap: var(--jama-space-4);
 }
 
-.btn-counter { 
+.btn-counter {
   background: var(--jama-brand-green);
   color: var(--jama-text-inverse);
-  border: none; 
-  width: 42px; 
-  height: 42px; 
+  border: none;
+  width: 42px;
+  height: 42px;
   border-radius: var(--jama-radius-full);
   font-size: var(--jama-text-2xl);
   font-weight: var(--jama-weight-bold);
-  cursor: pointer; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all var(--jama-transition-fast);
   font-family: var(--jama-font-display);
 }
@@ -132,56 +132,56 @@ h2 {
   transform: scale(1.05);
 }
 
-.btn-counter:active { 
-  transform: scale(0.95); 
+.btn-counter:active {
+  transform: scale(0.95);
 }
 
-.btn-counter:disabled { 
+.btn-counter:disabled {
   background: var(--jama-border-strong);
-  cursor: not-allowed; 
+  cursor: not-allowed;
 }
 
-.counter-value { 
+.counter-value {
   font-family: var(--jama-font-display);
   font-size: var(--jama-text-2xl);
   font-weight: var(--jama-weight-bold);
-  width: 32px; 
-  text-align: center; 
+  width: 32px;
+  text-align: center;
   color: var(--jama-brand-green);
 }
 
 /* ============================================================
    ENCABEZADO DEL MENÚ Y BOTÓN ALEATORIO
    ============================================================ */
-.section-header { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  flex-wrap: wrap; 
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
   gap: var(--jama-space-2);
   margin-top: var(--jama-space-6);
   border-bottom: 2px solid var(--jama-brand-gold);
   padding-bottom: var(--jama-space-2);
 }
 
-.section-header h2 { 
-  margin: 0; 
-  border: none; 
-  padding: 0; 
+.section-header h2 {
+  margin: 0;
+  border: none;
+  padding: 0;
 }
 
-.btn-random { 
+.btn-random {
   background: var(--jama-brand-green);
   color: var(--jama-text-inverse);
-  border: none; 
+  border: none;
   padding: var(--jama-space-2) var(--jama-space-4);
   font-family: var(--jama-font-display);
   font-size: var(--jama-text-sm);
   font-weight: var(--jama-weight-semibold);
   border-radius: var(--jama-radius-md);
-  cursor: pointer; 
-  display: flex; 
-  align-items: center; 
+  cursor: pointer;
+  display: flex;
+  align-items: center;
   gap: var(--jama-space-2);
   transition: all var(--jama-transition-base);
   box-shadow: var(--jama-shadow-brand);
@@ -192,27 +192,27 @@ h2 {
   transform: translateY(-1px);
 }
 
-.btn-random:active { 
-  transform: scale(0.96); 
+.btn-random:active {
+  transform: scale(0.96);
 }
 
 /* ============================================================
    MENÚ SEMANAL
    ============================================================ */
-.days-grid { 
-  display: grid; 
-  grid-template-columns: 1fr; 
+.days-grid {
+  display: grid;
+  grid-template-columns: 1fr;
   gap: var(--jama-space-3);
   margin-top: var(--jama-space-3);
 }
 
-@media (min-width: 600px) { 
-  .days-grid { 
-    grid-template-columns: 1fr 1fr; 
-  } 
+@media (min-width: 600px) {
+  .days-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
-.day-box { 
+.day-box {
   background: var(--jama-surface-alt);
   padding: var(--jama-space-3);
   border-radius: var(--jama-radius-md);
@@ -225,17 +225,17 @@ h2 {
   box-shadow: var(--jama-shadow-xs);
 }
 
-.day-box label { 
+.day-box label {
   font-family: var(--jama-font-display);
   font-weight: var(--jama-weight-semibold);
-  display: block; 
+  display: block;
   margin-bottom: var(--jama-space-2);
   color: var(--jama-brand-green);
   font-size: var(--jama-text-sm);
 }
 
-select { 
-  width: 100%; 
+select {
+  width: 100%;
   padding: var(--jama-space-2) var(--jama-space-3);
   border: 1px solid var(--jama-border-strong);
   border-radius: var(--jama-radius-sm);
@@ -412,7 +412,7 @@ select:focus {
   position: relative !important;
 }
 
-.categoria-header > .cat-arrow {
+.categoria-header>.cat-arrow {
   display: inline-block !important;
   font-size: 11px !important;
   color: var(--jama-brand-green) !important;
@@ -424,7 +424,7 @@ select:focus {
   overflow: visible !important;
 }
 
-.categoria-header > .cat-icon {
+.categoria-header>.cat-icon {
   display: inline-block !important;
   font-size: 20px !important;
   line-height: 1 !important;
@@ -434,7 +434,7 @@ select:focus {
   overflow: visible !important;
 }
 
-.categoria-header > .cat-name {
+.categoria-header>.cat-name {
   display: inline-block !important;
   font-family: var(--jama-font-display) !important;
   font-size: var(--jama-text-sm) !important;
@@ -448,7 +448,7 @@ select:focus {
   white-space: nowrap !important;
 }
 
-.categoria-header > .cat-count {
+.categoria-header>.cat-count {
   display: inline-block !important;
   font-family: var(--jama-font-display) !important;
   font-size: var(--jama-text-xs) !important;
@@ -463,7 +463,7 @@ select:focus {
   justify-self: end !important;
 }
 
-.categoria-header > .cat-check {
+.categoria-header>.cat-check {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -474,7 +474,7 @@ select:focus {
   width: auto !important;
 }
 
-.categoria-header > .cat-check > input[type="checkbox"] {
+.categoria-header>.cat-check>input[type="checkbox"] {
   width: 18px !important;
   height: 18px !important;
   cursor: pointer !important;
@@ -534,17 +534,17 @@ select:focus {
 /* ============================================================
    BOTÓN DE ACCIÓN PRINCIPAL
    ============================================================ */
-.btn-submit { 
+.btn-submit {
   background: var(--jama-gradient-cta);
   color: var(--jama-text-inverse);
-  border: none; 
+  border: none;
   padding: var(--jama-space-4);
   font-family: var(--jama-font-display);
   font-size: var(--jama-text-lg);
   font-weight: var(--jama-weight-bold);
   border-radius: var(--jama-radius-md);
-  cursor: pointer; 
-  width: 100%; 
+  cursor: pointer;
+  width: 100%;
   margin-top: var(--jama-space-3);
   transition: all var(--jama-transition-base);
   box-shadow: var(--jama-shadow-cta);
@@ -556,7 +556,7 @@ select:focus {
   box-shadow: 0 8px 24px rgba(255, 107, 53, 0.35);
 }
 
-.btn-submit:active { 
+.btn-submit:active {
   transform: scale(0.98);
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.25);
 }
@@ -564,41 +564,41 @@ select:focus {
 /* ============================================================
    BOTONES DE EXPORTACIÓN (WhatsApp)
    ============================================================ */
-.export-actions { 
-  display: flex; 
+.export-actions {
+  display: flex;
   gap: var(--jama-space-3);
   margin-top: var(--jama-space-4);
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
 }
 
-.btn-export { 
-  flex: 1; 
-  min-width: 180px; 
+.btn-export {
+  flex: 1;
+  min-width: 180px;
   padding: var(--jama-space-3) var(--jama-space-4);
   font-family: var(--jama-font-display);
   font-size: var(--jama-text-base);
   font-weight: var(--jama-weight-bold);
   border-radius: var(--jama-radius-md);
-  border: none; 
-  cursor: pointer; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: var(--jama-space-2);
   transition: all var(--jama-transition-base);
 }
 
-.btn-export:active { 
-  transform: scale(0.97); 
+.btn-export:active {
+  transform: scale(0.97);
 }
 
-.btn-whatsapp { 
+.btn-whatsapp {
   background: #25D366;
   color: var(--jama-text-inverse);
   box-shadow: 0 4px 10px rgba(37, 211, 102, 0.25);
 }
 
-.btn-whatsapp:hover { 
+.btn-whatsapp:hover {
   background: #20ba5a;
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35);
@@ -607,28 +607,33 @@ select:focus {
 /* ============================================================
    SPINNER DE CARGA
    ============================================================ */
-.spinner-container { 
-  display: none; 
-  text-align: center; 
+.spinner-container {
+  display: none;
+  text-align: center;
   margin: var(--jama-space-6) 0;
 }
 
-.spinner { 
+.spinner {
   border: 4px solid var(--jama-border);
   border-top: 4px solid var(--jama-brand-green);
-  border-radius: 50%; 
-  width: 40px; 
-  height: 40px; 
-  animation: spin 0.8s linear infinite; 
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 0.8s linear infinite;
   margin: 0 auto var(--jama-space-3) auto;
 }
 
-@keyframes spin { 
-  0% { transform: rotate(0deg); } 
-  100% { transform: rotate(360deg); } 
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-.spinner-text { 
+.spinner-text {
   font-family: var(--jama-font-display);
   font-size: var(--jama-text-sm);
   color: var(--jama-brand-green);
@@ -638,7 +643,7 @@ select:focus {
 /* ============================================================
    RESULTADOS
    ============================================================ */
-.result-box { 
+.result-box {
   margin-top: var(--jama-space-6);
   padding: var(--jama-space-5);
   background: var(--jama-brand-gold-light);
@@ -646,13 +651,13 @@ select:focus {
   border-radius: var(--jama-radius-lg);
 }
 
-.cost-total { 
+.cost-total {
   background: var(--jama-brand-green);
   color: var(--jama-text-inverse);
   padding: var(--jama-space-3) var(--jama-space-4);
   border-radius: var(--jama-radius-md);
-  display: block; 
-  text-align: center; 
+  display: block;
+  text-align: center;
   font-family: var(--jama-font-display);
   font-size: var(--jama-text-lg);
   font-weight: var(--jama-weight-bold);
@@ -660,12 +665,12 @@ select:focus {
   letter-spacing: 0.3px;
 }
 
-ul { 
+ul {
   padding-left: var(--jama-space-5);
   margin: var(--jama-space-2) 0;
 }
 
-li { 
+li {
   margin-bottom: var(--jama-space-2);
   font-size: var(--jama-text-sm);
   line-height: var(--jama-leading-relaxed);
@@ -674,7 +679,7 @@ li {
 /* ============================================================
    GUÍA DE PREPARACIÓN
    ============================================================ */
-::ng-deep .prep-box { 
+::ng-deep .prep-box {
   margin-top: var(--jama-space-6);
   padding: var(--jama-space-4);
   background: var(--jama-brand-gold-light);
@@ -682,7 +687,7 @@ li {
   border-radius: var(--jama-radius-lg);
 }
 
-::ng-deep .prep-card { 
+::ng-deep .prep-card {
   background: var(--jama-surface);
   padding: var(--jama-space-5);
   border-radius: var(--jama-radius-lg);
@@ -697,27 +702,27 @@ li {
   box-shadow: var(--jama-shadow-md);
 }
 
-::ng-deep .prep-card:last-child { 
-  margin-bottom: 0; 
+::ng-deep .prep-card:last-child {
+  margin-bottom: 0;
 }
 
 /* ============================================================
    HEADER DE LA TARJETA
    ============================================================ */
-::ng-deep .prep-day { 
+::ng-deep .prep-day {
   font-family: var(--jama-font-display);
   font-weight: var(--jama-weight-extrabold);
   color: var(--jama-brand-green);
   font-size: var(--jama-text-xs);
-  text-transform: uppercase; 
+  text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: var(--jama-space-1);
-  display: flex; 
-  align-items: center; 
+  display: flex;
+  align-items: center;
   gap: var(--jama-space-2);
 }
 
-::ng-deep .prep-dish { 
+::ng-deep .prep-dish {
   font-family: var(--jama-font-display);
   font-weight: var(--jama-weight-bold);
   color: var(--jama-brand-green);
@@ -739,14 +744,14 @@ li {
 /* ============================================================
    IMAGEN
    ============================================================ */
-::ng-deep .dish-img { 
-  width: 100%; 
-  height: 220px; 
-  object-fit: cover; 
+::ng-deep .dish-img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
   border-radius: var(--jama-radius-md);
   margin-bottom: var(--jama-space-4);
   border: 1px solid var(--jama-border);
-  display: block; 
+  display: block;
 }
 
 /* ============================================================
@@ -953,6 +958,146 @@ li {
   max-width: 180px;
   height: auto;
 }
+
+
+/* ============================================================
+   COMBOBOX (días de la semana)
+   - Se posiciona en flujo normal
+   - El panel flota sin expandir el contenedor
+   - Ancho adaptable al día-box
+   ============================================================ */
+.combobox {
+  position: relative;
+  width: 100%;
+}
+
+.combobox-input {
+  width: 100%;
+  padding: var(--jama-space-2) 32px var(--jama-space-2) var(--jama-space-3);
+  border: 1px solid var(--jama-border-strong);
+  border-radius: var(--jama-radius-sm);
+  background: var(--jama-surface);
+  font-family: var(--jama-font-body);
+  font-size: var(--jama-text-sm);
+  color: var(--jama-text);
+  outline: none;
+  transition: border-color var(--jama-transition-fast),
+              box-shadow var(--jama-transition-fast);
+  box-sizing: border-box;
+}
+
+.combobox-input::placeholder {
+  color: var(--jama-text-secondary);
+  opacity: 0.7;
+}
+
+.combobox-input:focus,
+.combobox.abierto .combobox-input {
+  border-color: var(--jama-brand-green);
+  box-shadow: 0 0 0 3px rgba(31, 78, 61, 0.1);
+}
+
+/* Flecha puramente decorativa */
+.combobox-arrow {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: var(--jama-brand-green);
+  pointer-events: none;
+  transition: transform var(--jama-transition-fast);
+}
+
+.combobox.abierto .combobox-arrow {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Panel flotante — no empuja el layout */
+.combobox-lista {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  margin: 0;
+  padding: var(--jama-space-1) 0;
+  list-style: none;
+  background: var(--jama-surface);
+  border: 1px solid var(--jama-brand-gold);
+  border-radius: var(--jama-radius-sm);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  max-height: 280px;
+  overflow-y: auto;
+
+  /* Animación de apertura */
+  animation: comboFade 120ms ease-out;
+}
+
+@keyframes comboFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.combobox-opcion {
+  padding: var(--jama-space-2) var(--jama-space-3);
+  font-family: var(--jama-font-body);
+  font-size: var(--jama-text-sm);
+  color: var(--jama-text);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background var(--jama-transition-fast);
+}
+
+.combobox-opcion.resaltado {
+  background: var(--jama-brand-gold-light);
+}
+
+.combobox-opcion.seleccionado {
+  background: var(--jama-brand-green-light);
+  color: var(--jama-brand-green);
+  font-weight: var(--jama-weight-semibold);
+}
+
+.combobox-opcion.seleccionado.resaltado {
+  background: var(--jama-brand-green-light);
+}
+
+.combobox-opcion-vacia {
+  font-style: italic;
+  color: var(--jama-text-secondary);
+  border-bottom: 1px solid var(--jama-border);
+  margin-bottom: var(--jama-space-1);
+}
+
+.combobox-sin-resultados {
+  font-style: italic;
+  color: var(--jama-text-secondary);
+  cursor: default;
+  text-align: center;
+}
+
+/* Scrollbar coherente con la app */
+.combobox-lista::-webkit-scrollbar { width: 8px; }
+.combobox-lista::-webkit-scrollbar-track { background: var(--jama-surface-alt); }
+.combobox-lista::-webkit-scrollbar-thumb {
+  background: var(--jama-brand-gold);
+  border-radius: var(--jama-radius-sm);
+}
+.combobox-lista::-webkit-scrollbar-thumb:hover {
+  background: var(--jama-brand-gold-hover);
+}
+
+/* En móvil, evitar que el panel tape los botones +/- del día siguiente
+   si el contenedor queda muy junto. */
+@media (max-width: 599px) {
+  .combobox-lista {
+    max-height: 220px;
+  }
+}
+
 
 @media (max-width: 599px) {
   /* ... otras reglas ... */

@@ -135,6 +135,36 @@ export type Database = {
         }
         Relationships: []
       }
+      atributos: {
+        Row: {
+          activo: boolean | null
+          codigo: string
+          color: string | null
+          icono: string | null
+          id: number
+          nombre: string
+          orden: number | null
+        }
+        Insert: {
+          activo?: boolean | null
+          codigo: string
+          color?: string | null
+          icono?: string | null
+          id?: number
+          nombre: string
+          orden?: number | null
+        }
+        Update: {
+          activo?: boolean | null
+          codigo?: string
+          color?: string | null
+          icono?: string | null
+          id?: number
+          nombre?: string
+          orden?: number | null
+        }
+        Relationships: []
+      }
       categorias: {
         Row: {
           id: number
@@ -241,6 +271,39 @@ export type Database = {
             columns: ["categoria_id"]
             isOneToOne: false
             referencedRelation: "categorias_ingredientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      platillo_atributos: {
+        Row: {
+          atributo_id: number
+          id: number
+          platillo_id: number
+        }
+        Insert: {
+          atributo_id: number
+          id?: number
+          platillo_id: number
+        }
+        Update: {
+          atributo_id?: number
+          id?: number
+          platillo_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "platillo_atributos_atributo_id_fkey"
+            columns: ["atributo_id"]
+            isOneToOne: false
+            referencedRelation: "atributos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "platillo_atributos_platillo_id_fkey"
+            columns: ["platillo_id"]
+            isOneToOne: false
+            referencedRelation: "platillos"
             referencedColumns: ["id"]
           },
         ]
@@ -388,24 +451,34 @@ export type Database = {
           categoria_id: number | null
           id: number
           imagen_url: string | null
+          region_culinaria_id: number | null
           tiempo_prep: string | null
         }
         Insert: {
           categoria_id?: number | null
           id?: number
           imagen_url?: string | null
+          region_culinaria_id?: number | null
           tiempo_prep?: string | null
         }
         Update: {
           categoria_id?: number | null
           id?: number
           imagen_url?: string | null
+          region_culinaria_id?: number | null
           tiempo_prep?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "platillos_categoria_id_fkey"
             columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "platillos_region_culinaria_id_fkey"
+            columns: ["region_culinaria_id"]
             isOneToOne: false
             referencedRelation: "categorias"
             referencedColumns: ["id"]
@@ -694,6 +767,7 @@ export type Database = {
           tiempo_prep: string
         }[]
       }
+      corregir_voseo_pe: { Args: { texto: string }; Returns: string }
       ingredientes_faltantes_agrupados: {
         Args: {
           p_ingredientes: number[]

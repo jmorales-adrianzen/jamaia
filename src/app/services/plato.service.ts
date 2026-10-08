@@ -34,7 +34,7 @@ export class PlatoService {
         platillo_id,
         nombre,
         preparacion,
-        platillos!inner(imagen_url, tiempo_prep)
+        platillos!inner(imagen_url, tiempo_prep, categoria_id)
       `)
       .eq('ubicacion_id', ubicacionId);
 
@@ -145,6 +145,7 @@ export class PlatoService {
         preparacion: t.preparacion ?? '',
         imagen_url: t.platillos?.imagen_url ?? '',
         tiempo_prep: t.platillos?.tiempo_prep ?? '',
+        categoria_id: t.platillos?.categoria_id ?? null,
         recomendacion: recomMap.get(t.platillo_id) ?? null,
         ingredientes: ings,
         acompanamientos: acompMap.get(t.platillo_id) ?? []
