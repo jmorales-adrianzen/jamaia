@@ -50,13 +50,14 @@ export class DeseasComponent implements OnInit {
 
   // ===== Ejemplos inspiradores =====
   readonly ejemplos: string[] = [
+    'algo con pollo',
     'algo con pollo y papa pero sin arroz',
     'algo con carne y papa',
     'algo con fideos spaghetti',
-    'algo con queso',
-    'algo con pescado y papa',
+    'algo con pescado',
     'algo vegetariano',
-    'algo con ensalada'
+    'algo con ensalada',
+    'quiero un postre',    
   ];
 
   constructor(
