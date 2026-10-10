@@ -559,3 +559,50 @@
 .sugerencia-chip:active {
   transform: translateY(0);
 }
+
+/* ============================================================
+   CHIPS DE ATRIBUTOS
+   ============================================================ */
+.atributos-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--jama-space-2);
+  margin-bottom: var(--jama-space-4);
+  padding: var(--jama-space-3) var(--jama-space-4);
+  background: var(--jama-brand-green-light);
+  border: 1px solid var(--jama-brand-green);
+  border-radius: var(--jama-radius-md);
+}
+
+.atributos-chips-label {
+  font-family: var(--jama-font-display);
+  font-size: var(--jama-text-sm);
+  font-weight: var(--jama-weight-semibold);
+  color: var(--jama-brand-green);
+  margin-right: var(--jama-space-2);
+}
+
+.atributo-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: var(--jama-radius-full);
+  font-family: var(--jama-font-display);
+  font-size: var(--jama-text-xs);
+  font-weight: var(--jama-weight-semibold);
+  white-space: nowrap;
+}
+
+.atributo-chip-incluir {
+  background: var(--jama-brand-green);
+  color: var(--jama-text-inverse);
+  border: 1px solid var(--jama-brand-green-hover);
+}
+
+.atributo-chip-excluir {
+  background: var(--jama-danger-light);
+  color: var(--jama-danger-hover);
+  border: 1px solid var(--jama-danger);
+}

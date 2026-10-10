@@ -45,13 +45,18 @@ export class DeseasComponent implements OnInit {
   // ===== Validación de términos =====
   sugerenciasBusqueda: ValidacionTermino[] = [];
 
+  atributosIncluir: string[] = [];
+  atributosExcluir: string[] = [];
+
   // ===== Ejemplos inspiradores =====
   readonly ejemplos: string[] = [
     'algo con pollo y papa pero sin arroz',
     'algo con carne y papa',
     'algo con fideos spaghetti',
     'algo con queso',
-    'algo con pescado y papa'
+    'algo con pescado y papa',
+    'algo vegetariano',
+    'algo con ensalada'
   ];
 
   constructor(
@@ -188,6 +193,13 @@ export class DeseasComponent implements OnInit {
         }
       }
 
+      const atributos = this.platoService.extraerAtributos(texto);
+      console.log('🏷️ Atributos detectados:', atributos);
+
+      // Guardar para mostrar chips en la UI
+      this.atributosIncluir = atributos.incluir;
+      this.atributosExcluir = atributos.excluir;      
+
       // ============================================================
       // 3. Ejecutar la búsqueda semántica
       // ============================================================
@@ -195,8 +207,10 @@ export class DeseasComponent implements OnInit {
         textoParaBuscar,
         this.paisSeleccionado.id,
         'nombre',
-        0.15,
-        20
+        0.55,
+        30,                  // 👈 subir de 20 a 30 (más candidatos, el corte real es en cortarPorGap)
+        atributos.incluir,   // 👈 NUEVO
+        atributos.excluir    // 👈 NUEVO
       );
 
       this.haBuscado = true;
@@ -294,17 +308,38 @@ export class DeseasComponent implements OnInit {
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
-      // Quitar palabras de relleno
       .replace(/\b(algo|que|con|de|para|pero|sin|no|tenga|lleve|quiero|deseo|comer|y|e|o|u|ni|tipo|sea|hay|esta|este)\b/g, ' ')
       .replace(/[.,;:!?()]/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
 
-    // Dividir por espacios y filtrar palabras cortas
+    // 👇 NUEVO: palabras que NO son ingredientes (atributos, categorías, conceptos)
+    const noIngredientes = new Set([
+      // Categorías
+      'entrada', 'entradas', 'sopa', 'sopas', 'caldo', 'caldos', 'crema', 'cremas',
+      'postre', 'postres', 'bebida', 'bebidas', 'refresco', 'jugo',
+      'desayuno', 'desayunos', 'almuerzo', 'cena', 'comida',
+      'plato', 'platos', 'principal', 'fondo',
+      // Atributos
+      'vegetariano', 'vegetariana', 'vegetarianos',
+      'vegano', 'vegana', 'veganos',
+      'saludable', 'saludables', 'ligero', 'ligera', 'liviano', 'liviana',
+      'light', 'picante', 'picantes', 'economico', 'economica',
+      'barato', 'barata', 'accesible', 'celiaco', 'celiaca',
+      'intolerante', 'proteico', 'proteica',
+      // Conceptos generales
+      'ensalada', 'ensaladas', 'guarnicion', 'guarniciones',
+      'entrada', 'entradas', 'plato', 'platos',
+      'carne', 'carnes', 'pescado', 'pescados', 'pollo', 'carnes',
+      'comida', 'comidas', 'alimento', 'alimentos',
+      'hoy', 'semana', 'dias', 'dia',
+    ]);
+
     return textoLimpio
       .split(' ')
       .filter(p => p.length >= 3)
-      .filter((v, i, a) => a.indexOf(v) === i); // deduplicar
+      .filter(p => !noIngredientes.has(p))   // 👈 NUEVO
+      .filter((v, i, a) => a.indexOf(v) === i);
   }
 
   // ============================================================
@@ -332,7 +367,31 @@ export class DeseasComponent implements OnInit {
     this.errorMensaje = null;
     this.detalleExpandido = null;
     this.detalleActual = null;
+    this.atributosIncluir = [];
+    this.atributosExcluir = [];    
   }
 
+  // Mapa de codigo → { nombre, icono } para mostrar chips
+  readonly ATRIBUTOS_LABEL: { [k: string]: { nombre: string; icono: string } } = {
+    'entrada':       { nombre: 'Entrada',        icono: '🥗' },
+    'sopa':          { nombre: 'Sopa/Crema',     icono: '🍲' },
+    'plato_fondo':   { nombre: 'Plato de fondo', icono: '🍽️' },
+    'postre':        { nombre: 'Postre',         icono: '🍮' },
+    'bebida':        { nombre: 'Bebida',         icono: '🥤' },
+    'desayuno':      { nombre: 'Desayuno',       icono: '☀️' },
+    'vegetariano':   { nombre: 'Vegetariano',    icono: '🥬' },
+    'vegano':        { nombre: 'Vegano',         icono: '🌱' },
+    'saludable':     { nombre: 'Saludable',      icono: '💚' },
+    'bajo_calorias': { nombre: 'Bajo en calorías', icono: '🥗' },
+    'alto_proteina': { nombre: 'Alto en proteína', icono: '💪' },
+    'sin_gluten':    { nombre: 'Sin gluten',     icono: '🌾' },
+    'sin_lactosa':   { nombre: 'Sin lactosa',    icono: '🥛' },
+    'picante':       { nombre: 'Picante',        icono: '🌶️' },
+    'economico':     { nombre: 'Económico',      icono: '💰' },
+  };
+
+  getLabelAtributo(codigo: string): { nombre: string; icono: string } {
+    return this.ATRIBUTOS_LABEL[codigo] ?? { nombre: codigo, icono: '🏷️' };
+  }
 
 }
