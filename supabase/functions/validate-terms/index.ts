@@ -168,7 +168,7 @@ Deno.serve(async (req) => {
             nombre: i.original,
             score: similitud(termino, i.normalizado),
           }))
-          .filter(i => i.score > 0.5)
+          .filter(i => i.score > 0.6)
           .sort((a, b) => b.score - a.score)
           .slice(0, 3)
           .map(i => i.nombre);
@@ -176,10 +176,14 @@ Deno.serve(async (req) => {
         sugerencias = conSimilitud;
 
         // Si no hay por similitud, buscar por raíz común (primeras 3-4 letras)
-        if (sugerencias.length === 0 && termino.length >= 4) {
-          const raiz = termino.substring(0, 4);
+        if (sugerencias.length === 0 && termino.length >= 4 && termino.length <= 12) {
+          const raiz = termino.substring(0, 3);
           sugerencias = nombresIngredientes
-            .filter(i => i.normalizado.includes(raiz))
+            .filter(i =>
+              i.normalizado.split(' ').some((palabra: string) =>
+                palabra.startsWith(raiz) && Math.abs(palabra.length - termino.length) <= 3
+              )
+            )
             .slice(0, 3)
             .map(i => i.original);
         }

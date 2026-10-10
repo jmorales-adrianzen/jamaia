@@ -57,6 +57,23 @@
       </select>
     </div>
 
+    <!-- CHIPS DE ATRIBUTOS DETECTADOS -->
+    <div class="atributos-chips" *ngIf="atributosIncluir.length > 0 || atributosExcluir.length > 0">
+      <span class="atributos-chips-label">🏷️ Filtrando por:</span>
+
+      <span
+        *ngFor="let cod of atributosIncluir"
+        class="atributo-chip atributo-chip-incluir">
+        {{ getLabelAtributo(cod).icono }} {{ getLabelAtributo(cod).nombre }}
+      </span>
+
+      <span
+        *ngFor="let cod of atributosExcluir"
+        class="atributo-chip atributo-chip-excluir">
+        🚫 Sin {{ getLabelAtributo(cod).nombre }}
+      </span>
+    </div>    
+
     <!-- EJEMPLOS INSPIRADORES (solo si no se ha buscado) -->
     <div *ngIf="!haBuscado" class="ejemplos-box">
       <h3 class="ejemplos-titulo">💡 Ideas para inspirarte:</h3>
