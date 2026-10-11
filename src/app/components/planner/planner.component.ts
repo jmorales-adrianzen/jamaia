@@ -20,8 +20,6 @@ import {
   IngredienteDespensa
 } from 'src/app/models/plato.model';
 
-
-
 @Component({
   selector: 'app-planner',
   standalone: true,
@@ -63,6 +61,11 @@ export class PlannerComponent implements OnInit {
   categoriasDespensa: CategoriaDespensa[] = [];
   filtroDespensa: string = '';
 
+  // ============================================================
+  // DESPENSA COLAPSABLE
+  // ============================================================
+  despensaAbierta: boolean = false;
+
   comprasGlobales: { [nombre: string]: { cant: number; unidad: string; costo: number } } = {};
   costoTotalGlobal: number = 0;
   htmlCompras: string = '';
@@ -79,10 +82,12 @@ export class PlannerComponent implements OnInit {
   comboAbierto: { [dia: string]: boolean } = {};
   textoBusqueda: { [dia: string]: string } = {};
   indiceResaltado: { [dia: string]: number } = {};
-  private cerrarComboTimer: any = null;
 
-  // Lista filtrada de "Platos de Fondo" (categoría_id = 1)
-  platosFondoDisponibles: PlatoCompleto[] = [];
+  // Lista de platos para los combos (Platos de Fondo + Sopas + Entradas)
+  platosCombos: PlatoCompleto[] = [];
+
+  // Categorías incluidas en los combos
+  private readonly CATEGORIAS_COMBO = [1, 3, 4];
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -91,7 +96,9 @@ export class PlannerComponent implements OnInit {
     private analytics: AnalyticsService
   ) { }
 
-  // Cerrar al hacer click fuera (pero después de focus)
+  // ============================================================
+  // HOST LISTENERS
+  // ============================================================
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement | null;
@@ -102,13 +109,11 @@ export class PlannerComponent implements OnInit {
     }
   }
 
-  // Cerrar el combo solo cuando el foco sale del contenedor
   @HostListener('document:focusin', ['$event'])
   onDocumentFocusIn(event: FocusEvent): void {
     const target = event.target as HTMLElement | null;
     if (!target) return;
 
-    // Si el foco entró a un .combobox, dejamos ese abierto y cerramos los demás
     const combo = target.closest('.combobox');
 
     this.diasKeys.forEach(dia => {
@@ -118,11 +123,19 @@ export class PlannerComponent implements OnInit {
     });
   }
 
-
+  // ============================================================
+  // CICLO DE VIDA
+  // ============================================================
   async ngOnInit(): Promise<void> {
+    // La despensa siempre empieza cerrada (no persistimos estado).
+    this.despensaAbierta = false;
+
     await this.cargarPaises();
   }
 
+  // ============================================================
+  // CARGA INICIAL
+  // ============================================================
   private async cargarPaises(): Promise<void> {
     try {
       this.paises = await this.ubicacionService.obtenerPaises();
@@ -149,13 +162,14 @@ export class PlannerComponent implements OnInit {
       this.platosDisponibles = platos;
       this.platoMap = new Map(platos.map(p => [p.platillo_id, p]));
 
-      //LOG temportal paa ver listado de platos de fondo
-      console.log('Platos totales:', platos.length);
-      console.log('Platos de fondo (cat 1):', platos.filter(p => p.categoria_id === 1).length);
-      console.log('Categorías presentes:', [...new Set(platos.map(p => p.categoria_id))]);
+      // 👇 Platos para los combos: Platos de Fondo (1) + Sopas (3) + Entradas (4)
+      this.platosCombos = platos.filter(p =>
+        p.categoria_id !== null && this.CATEGORIAS_COMBO.includes(p.categoria_id)
+      );
 
-      // 👇 NUEVO: filtrar sólo Platos de Fondo (categoria_id === 1)
-      this.platosFondoDisponibles = platos.filter(p => p.categoria_id === 1);
+      console.log('Platos totales:', platos.length);
+      console.log('Platos disponibles en combos (cat 1, 3, 4):', this.platosCombos.length);
+      console.log('Categorías presentes:', [...new Set(platos.map(p => p.categoria_id))]);
 
       const mapa = new Map<number, IngredienteDespensa>();
       for (const p of platos) {
@@ -183,7 +197,7 @@ export class PlannerComponent implements OnInit {
       this.filtroDespensa = '';
       this.menuSemanal = this.menuService.crearSemanaVacia();
 
-      // 👇 NUEVO: resetear estados de combos
+      // Resetear estados de combos
       this.comboAbierto = {};
       this.textoBusqueda = {};
       this.indiceResaltado = {};
@@ -231,24 +245,19 @@ export class PlannerComponent implements OnInit {
     );
   }
 
-
   // ============================================================
   // COMBOBOX CON BUSCADOR Y NAVEGACIÓN POR TECLADO
   // ============================================================
-
   abrirCombo(dia: DiaSemana): void {
-    // Cerrar los demás combos
     this.diasKeys.forEach(d => {
       if (d !== dia) this.comboAbierto[d] = false;
     });
 
     this.comboAbierto[dia] = true;
 
-    // Al abrir: si hay plato seleccionado, dejar su nombre; si no, limpiar
     if (this.menuSemanal[dia] !== null) {
       const p = this.platoMap.get(this.menuSemanal[dia]!);
       this.textoBusqueda[dia] = p ? p.nombre : '';
-      // Resaltar la opción seleccionada
       const idx = this.filtrarPlatosPorTexto(this.textoBusqueda[dia])
         .findIndex(x => x.platillo_id === this.menuSemanal[dia]);
       this.indiceResaltado[dia] = idx >= 0 ? idx + 1 : 0;
@@ -261,25 +270,20 @@ export class PlannerComponent implements OnInit {
   cerrarCombo(dia: DiaSemana): void {
     this.comboAbierto[dia] = false;
 
-    // Solo sincroniza el texto con el plato seleccionado si el texto actual
-    // NO coincide con ninguna búsqueda en curso
     const textoActual = this.textoBusqueda[dia] ?? '';
     const coincideAlgunaOpcion = this.filtrarPlatosPorTexto(textoActual).length > 0;
 
     if (this.menuSemanal[dia] !== null) {
       const p = this.platoMap.get(this.menuSemanal[dia]!);
       if (p && p.nombre === textoActual) {
-        // El texto visible ya coincide con el plato → no hacer nada
         return;
       }
       this.textoBusqueda[dia] = p ? p.nombre : '';
     } else if (!coincideAlgunaOpcion) {
-      // El usuario escribió algo que no es un plato → limpiar
       this.textoBusqueda[dia] = '';
     }
   }
 
-  /** Alterna abierto/cerrado al hacer click en la flecha */
   toggleCombo(dia: DiaSemana, event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
@@ -293,13 +297,13 @@ export class PlannerComponent implements OnInit {
 
   onBuscar(dia: DiaSemana): void {
     this.comboAbierto[dia] = true;
-    this.indiceResaltado[dia] = 0;   // reset al inicio de la lista
+    this.indiceResaltado[dia] = 0;
   }
 
   filtrarPlatosPorTexto(texto: string): PlatoCompleto[] {
     const t = (texto ?? '').trim().toLowerCase();
-    if (!t) return this.platosFondoDisponibles;
-    return this.platosFondoDisponibles.filter(p =>
+    if (!t) return this.platosCombos;
+    return this.platosCombos.filter(p =>
       p.nombre.toLowerCase().includes(t)
     );
   }
@@ -317,7 +321,6 @@ export class PlannerComponent implements OnInit {
     this.comboAbierto[dia] = false;
   }
 
-  /** Limpia la selección actual del día */
   limpiarSeleccion(dia: DiaSemana, event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
@@ -326,18 +329,9 @@ export class PlannerComponent implements OnInit {
     this.comboAbierto[dia] = false;
   }
 
-
-  /**
-   * Maneja el teclado dentro del combobox:
-   *   ↓ / ↑      → mueve el resaltado
-   *   Enter      → confirma la opción resaltada
-   *   Esc        → cierra sin cambiar
-   *   Tab        → cierra y salta al siguiente combo/día
-   *   Backspace  → si no hay texto, limpia la selección
-   */
   onKeydownCombo(event: KeyboardEvent, dia: DiaSemana, idxDia: number): void {
     const opciones = this.filtrarPlatosPorTexto(this.textoBusqueda[dia]);
-    const totalOpciones = opciones.length + 1; // +1 por la opción "Ninguno"
+    const totalOpciones = opciones.length + 1;
 
     switch (event.key) {
       case 'ArrowDown': {
@@ -378,7 +372,6 @@ export class PlannerComponent implements OnInit {
           const p = opciones[i - 1];
           if (p) this.seleccionarPlato(dia, p.platillo_id);
         }
-        // Mover el foco al siguiente día (comportamiento "confirmar y avanzar")
         this.enfocarSiguienteDia(idxDia);
         break;
       }
@@ -390,8 +383,6 @@ export class PlannerComponent implements OnInit {
       }
 
       case 'Tab': {
-        // Permitir el comportamiento nativo (salta al siguiente input),
-        // pero cerrar el combo abierto
         this.cerrarCombo(dia);
         break;
       }
@@ -405,21 +396,17 @@ export class PlannerComponent implements OnInit {
     }
   }
 
-  /** Enfoca el input del siguiente día (para navegar con Enter) */
   private enfocarSiguienteDia(idxActual: number): void {
     const siguiente = this.diasKeys[idxActual + 1];
     if (!siguiente) return;
 
-    // Esperar al siguiente ciclo de render para que el combo previo se cierre
     setTimeout(() => {
       const input = document.getElementById('combo-' + siguiente) as HTMLInputElement | null;
       input?.focus();
-      // Abrir el siguiente combo automáticamente para agilizar la selección
       this.abrirCombo(siguiente);
     }, 0);
   }
 
-  /** Asegura que la opción resaltada esté visible dentro del scroll del panel */
   private scrollOpcionVisible(dia: DiaSemana): void {
     setTimeout(() => {
       const id = 'opcion-' + dia + '-' + this.indiceResaltado[dia];
@@ -428,7 +415,9 @@ export class PlannerComponent implements OnInit {
     }, 0);
   }
 
-
+  // ============================================================
+  // ACCIONES UI
+  // ============================================================
   async cambiarPais(): Promise<void> {
     const pais = this.paises.find(p => p.codigo_iso === this.paisActual);
     if (!pais) return;
@@ -470,16 +459,15 @@ export class PlannerComponent implements OnInit {
   }
 
   seleccionarAleatorio(): void {
-    if (this.platosFondoDisponibles.length === 0) return;
+    if (this.platosCombos.length === 0) return;
 
-    const ids = this.platosFondoDisponibles.map(p => p.platillo_id);
+    const ids = this.platosCombos.map(p => p.platillo_id);
     const mezcla = [...ids].sort(() => Math.random() - 0.5);
 
     this.diasKeys.forEach((dia, i) => {
       const id = mezcla[i] ?? null;
       this.menuSemanal[dia] = id;
 
-      // Sincronizar el texto visible del combo
       if (id !== null) {
         const p = this.platoMap.get(id);
         this.textoBusqueda[dia] = p ? p.nombre : '';
@@ -515,8 +503,22 @@ export class PlannerComponent implements OnInit {
     });
   }
 
+  // ============================================================
+  // DESPENSA COLAPSABLE
+  // ============================================================
+  toggleDespensa(): void {
+    this.despensaAbierta = !this.despensaAbierta;
+  }
+
+  contarMarcadosDespensa(): number {
+    return Object.values(this.despensa).filter(v => v).length;
+  }
+
+  // ============================================================
+  // GENERACIÓN
+  // ============================================================
   ejecutarGeneracion(): void {
-    this.analytics.track('click_generar');   // 👈 NUEVO
+    this.analytics.track('click_generar');
     this.mostrarResultado = false;
     this.cargando = true;
     setTimeout(() => {
@@ -533,7 +535,6 @@ export class PlannerComponent implements OnInit {
       this.despensa
     );
 
-    // 👇 NUEVO: guardar datos para el modal
     this.comprasDetalladas = resultado.compras;
     this.platosSeleccionados = resultado.platosConDetalle;
 
@@ -558,7 +559,6 @@ export class PlannerComponent implements OnInit {
     if (resultado.platosConDetalle.length === 0) {
       htmlS = '<p style="text-align:center;color:#718096;">No has seleccionado ningún plato.</p>';
     } else {
-
       for (const { dia, plato } of resultado.platosConDetalle) {
         const insumos = plato.ingredientes
           .map(i => `<b>${i.nombre}:</b> ${this.menuService.formatearCantidad(i.cantidad * this.personas, i.unidad)}`)
@@ -587,7 +587,6 @@ export class PlannerComponent implements OnInit {
             </div>
           `
           : '';
-
 
         htmlS += `
           <div class="prep-card">
@@ -618,9 +617,6 @@ export class PlannerComponent implements OnInit {
     this.mostrarResultado = true;
   }
 
-  // ============================================================
-  //  GENERAR HTML DE PASOS (con secciones)
-  // ============================================================
   private generarHtmlPasos(preparacion: string): string {
     if (!preparacion) return '';
 
@@ -663,7 +659,7 @@ export class PlannerComponent implements OnInit {
   }
 
   // ============================================================
-  //  WHATSAPP — Abrir modal
+  // WHATSAPP
   // ============================================================
   abrirModalWhatsapp(): void {
     if (this.comprasDetalladas.length === 0) {
@@ -676,5 +672,4 @@ export class PlannerComponent implements OnInit {
   cerrarModalWhatsapp(): void {
     this.mostrarModalWhatsapp = false;
   }
-
 }

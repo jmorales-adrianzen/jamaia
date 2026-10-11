@@ -196,199 +196,301 @@ export class PlatoService {
     return platos.find(p => p.platillo_id === platilloId) ?? null;
   }
 
+
+// ============================================================
+//  BÚSQUEDA SEMÁNTICA CON gte-small
+// ============================================================
+/**
+ * Busca platos por texto libre usando embeddings.
+ *
+ * @param query            - Texto del usuario (ej: "algo con pollo y papas")
+ * @param ubicacionId      - 1 = Perú, 2 = Argentina
+ * @param tipo             - 'nombre' (busca por nombre) o 'preparacion' (busca por pasos)
+ * @param threshold        - Umbral mínimo de similitud para la RPC (0.55 es buen punto con gte-small)
+ * @param limit            - Máximo de candidatos que devuelve la RPC
+ * @param atributosIncluir - Códigos de atributos que el plato DEBE tener
+ * @param atributosExcluir - Códigos de atributos que el plato NO debe tener
+ */
+async buscarSemantico(
+  query: string,
+  ubicacionId: number,
+  tipo: 'nombre' | 'preparacion' = 'nombre',
+  threshold: number = 0.25,
+  limit: number = 10,
+  atributosIncluir: string[] = [],
+  atributosExcluir: string[] = []
+): Promise<PlatoMatch[]> {
+  console.group('🔍 BÚSQUEDA SEMÁNTICA');
+
   // ============================================================
-  //  BÚSQUEDA SEMÁNTICA CON gte-small
+  // 1. Extraer filtros de ingredientes
   // ============================================================
+  const filtros = this.extraerFiltros(query);
+  console.log('📝 Query original:', `"${query}"`);
+  console.log('🎯 Filtros ingredientes:');
+  console.log('  → Incluir:', filtros.incluir.length > 0 ? filtros.incluir : '(ninguno)');
+  console.log('  → Excluir:', filtros.excluir.length > 0 ? filtros.excluir : '(ninguno)');
+  console.log('🏷️ Atributos:');
+  console.log('  → Incluir:', atributosIncluir.length > 0 ? atributosIncluir : '(ninguno)');
+  console.log('  → Excluir:', atributosExcluir.length > 0 ? atributosExcluir : '(ninguno)');
+
+  // ============================================================
+  // 2. Limpiar texto para embedding
+  // ============================================================
+  const textoParaEmbedding = this.limpiarTextoParaEmbedding(query);
+  const textoFinal = textoParaEmbedding || query;
+  console.log('📤 Texto para embedding:', `"${textoFinal}"`);
+
+  // ============================================================
+  // 3. Generar embedding
+  // ============================================================
+  const { data: embedData, error: embedError } = await this.sb.client.functions.invoke(
+    'embed-query',
+    { body: { text: textoFinal } }
+  );
+
+  if (embedError) {
+    console.error('❌ Error en embed-query:', embedError);
+    console.groupEnd();
+    throw embedError;
+  }
+  if (!embedData?.embedding) {
+    console.error('❌ No se generó embedding');
+    console.groupEnd();
+    throw new Error('No se pudo generar el embedding');
+  }
+
+  // ============================================================
+  // 4. Preparar parámetros para la RPC
+  // ============================================================
+  const params = {
+    query_embedding:     embedData.embedding,
+    match_threshold:     threshold,
+    match_count:         limit,
+    p_ubicacion_id:      ubicacionId,
+    p_tipo:              tipo,
+    p_incluir:           filtros.incluir.length > 0 ? filtros.incluir : undefined,
+    p_excluir:           filtros.excluir.length > 0 ? filtros.excluir : undefined,
+    p_atributos:         atributosIncluir.length > 0 ? atributosIncluir : undefined,
+    p_atributos_excluir: atributosExcluir.length > 0 ? atributosExcluir : undefined,
+  };
+
+  console.log('📤 Parámetros RPC:', params);
+
+  // ============================================================
+  // 5. Ejecutar la RPC
+  // ============================================================
+  const { data, error } = await this.sb.client.rpc('match_platos_con_filtros', params);
+
+  if (error) {
+    console.error('❌ Error en RPC:', error);
+    console.groupEnd();
+    throw error;
+  }
+
+  console.log(`✅ ${data?.length ?? 0} resultados crudos`);
+
+  // ============================================================
+  // 6. Mapear
+  // ============================================================
+  const mapeados: PlatoMatch[] = (data ?? []).map((r: any) => ({
+    platillo_id:          r.platillo_id,
+    nombre:               r.nombre,
+    imagen_url:           r.imagen_url ?? '',
+    tiempo_prep:          r.tiempo_prep ?? '',
+    categoria_id:         r.categoria_id ?? null,
+    ingredientes_totales: 0,
+    ingredientes_tiene:   0,
+    ingredientes_faltantes: 0,
+    porcentaje_match:     Math.round(r.similarity * 100),
+  }));
+
+  const tieneIngredientes = filtros.incluir.length > 0 || filtros.excluir.length > 0;
+  const tieneAtributos    = atributosIncluir.length > 0 || atributosExcluir.length > 0;
+  const pidioCategoria    = atributosIncluir.some(a =>
+    ['entrada', 'sopa', 'plato_fondo', 'postre', 'bebida', 'desayuno'].includes(a)
+  );
+
+  console.log('🧭 Estrategia de ranking:');
+  console.log('  → tieneIngredientes:', tieneIngredientes);
+  console.log('  → tieneAtributos:   ', tieneAtributos);
+  console.log('  → pidioCategoria:   ', pidioCategoria);
+
+  // ============================================================
+  // Orden de prioridad de categorías para presentación
+  // ============================================================
+  const ORDEN_CATEGORIA: { [k: number]: number } = {
+    1: 0,   // Plato de Fondo
+    3: 1,   // Sopa / Crema
+    4: 2,   // Entrada
+    2: 3,   // Guarnición
+    5: 4,   // Postre
+    6: 5,   // Desayuno
+  };
+
+  /** Ordena por prioridad de categoría y luego por similitud DESC */
+  const ordenarPorCategoriaYSimilitud = (arr: PlatoMatch[]): PlatoMatch[] => {
+    return [...arr].sort((a, b) => {
+      const aPrio = ORDEN_CATEGORIA[a.categoria_id ?? 99] ?? 99;
+      const bPrio = ORDEN_CATEGORIA[b.categoria_id ?? 99] ?? 99;
+      if (aPrio !== bPrio) return aPrio - bPrio;
+      return b.porcentaje_match - a.porcentaje_match;
+    });
+  };
+
   /**
-   * Busca platos por texto libre usando embeddings.
+   * Corta la lista respetando los grupos de categoría: dentro de cada
+   * categoría se aplica corte por gap, pero nunca se descarta una
+   * categoría completa si tiene al menos 1 resultado razonable.
    *
-   * @param query            - Texto del usuario (ej: "algo con pollo y papas")
-   * @param ubicacionId      - 1 = Perú, 2 = Argentina
-   * @param tipo             - 'nombre' (busca por nombre) o 'preparacion' (busca por pasos)
-   * @param threshold        - Umbral mínimo de similitud para la RPC (0.55 es buen punto con gte-small)
-   * @param limit            - Máximo de candidatos que devuelve la RPC antes del corte por gap
-   * @param atributosIncluir - Códigos de atributos que el plato DEBE tener
-   * @param atributosExcluir - Códigos de atributos que el plato NO debe tener
+   * Regla:
+   *   - Se recorre la lista agrupada por categoría.
+   *   - En cada categoría se conservan los elementos hasta que la
+   *     similitud caiga más de `gapMaxPorCategoria` puntos respecto
+   *     al PRIMER elemento de esa categoría.
+   *   - Se garantiza al menos 1 elemento por categoría presente (si su
+   *     top >= umbralBlando).
    */
-  async buscarSemantico(
-    query: string,
-    ubicacionId: number,
-    tipo: 'nombre' | 'preparacion' = 'nombre',
-    threshold: number = 0.25,
-    limit: number = 10,
-    atributosIncluir: string[] = [],
-    atributosExcluir: string[] = []
-  ): Promise<PlatoMatch[]> {
-    console.group('🔍 BÚSQUEDA SEMÁNTICA');
+  const cortarRespetandoCategorias = (
+    arr: PlatoMatch[],
+    umbralBlando: number = 78,
+    gapMaxPorCategoria: number = 8,
+    maxPorCategoria: number = 5
+  ): PlatoMatch[] => {
+    // Agrupar por categoría (manteniendo el orden de ORDEN_CATEGORIA)
+    const grupos = new Map<number, PlatoMatch[]>();
+    for (const r of arr) {
+      const cat = r.categoria_id ?? 99;
+      if (!grupos.has(cat)) grupos.set(cat, []);
+      grupos.get(cat)!.push(r);
+    }
 
-    // ============================================================
-    // 1. Extraer filtros de ingredientes
-    // ============================================================
-    const filtros = this.extraerFiltros(query);
-    console.log('📝 Query original:', `"${query}"`);
-    console.log('🎯 Filtros ingredientes:');
-    console.log('  → Incluir:', filtros.incluir.length > 0 ? filtros.incluir : '(ninguno)');
-    console.log('  → Excluir:', filtros.excluir.length > 0 ? filtros.excluir : '(ninguno)');
-    console.log('🏷️ Atributos:');
-    console.log('  → Incluir:', atributosIncluir.length > 0 ? atributosIncluir : '(ninguno)');
-    console.log('  → Excluir:', atributosExcluir.length > 0 ? atributosExcluir : '(ninguno)');
-
-    // ============================================================
-    // 2. Limpiar texto para embedding
-    // ============================================================
-    const textoParaEmbedding = this.limpiarTextoParaEmbedding(query);
-    const textoFinal = textoParaEmbedding || query;
-    console.log('📤 Texto para embedding:', `"${textoFinal}"`);
-
-    // ============================================================
-    // 3. Generar embedding
-    // ============================================================
-    const { data: embedData, error: embedError } = await this.sb.client.functions.invoke(
-      'embed-query',
-      { body: { text: textoFinal } }
+    const categoriasOrdenadas = Array.from(grupos.keys()).sort(
+      (a, b) => (ORDEN_CATEGORIA[a] ?? 99) - (ORDEN_CATEGORIA[b] ?? 99)
     );
 
-    if (embedError) {
-      console.error('❌ Error en embed-query:', embedError);
-      console.groupEnd();
-      throw embedError;
-    }
-    if (!embedData?.embedding) {
-      console.error('❌ No se generó embedding');
-      console.groupEnd();
-      throw new Error('No se pudo generar el embedding');
-    }
+    const resultado: PlatoMatch[] = [];
 
-    // ============================================================
-    // 4. Preparar parámetros para la RPC
-    // ============================================================
-    const params = {
-      query_embedding: embedData.embedding,
-      match_threshold: threshold,
-      match_count: limit,
-      p_ubicacion_id: ubicacionId,
-      p_tipo: tipo,
-      p_incluir: filtros.incluir.length > 0 ? filtros.incluir : undefined,
-      p_excluir: filtros.excluir.length > 0 ? filtros.excluir : undefined,
-      p_atributos: atributosIncluir.length > 0 ? atributosIncluir : undefined,
-      p_atributos_excluir: atributosExcluir.length > 0 ? atributosExcluir : undefined,
-    };
+    for (const cat of categoriasOrdenadas) {
+      const items = grupos.get(cat)!;
 
-    console.log('📤 Parámetros RPC:', params);
+      // Ordenar por similitud DESC dentro de la categoría
+      const itemsOrd = [...items].sort(
+        (a, b) => b.porcentaje_match - a.porcentaje_match
+      );
 
-    // ============================================================
-    // 5. Ejecutar la RPC
-    // ============================================================
-    const { data, error } = await this.sb.client.rpc('match_platos_con_filtros', params);
+      const top = itemsOrd[0]?.porcentaje_match ?? 0;
+      if (top < umbralBlando) continue;   // categoría demasiado débil
 
-    if (error) {
-      console.error('❌ Error en RPC:', error);
-      console.groupEnd();
-      throw error;
-    }
+      const umbralCat = top - gapMaxPorCategoria;
+      const seleccionados: PlatoMatch[] = [];
 
-    console.log(`✅ ${data?.length ?? 0} resultados crudos`);
-
-    // ============================================================
-    // 6. Mapear y aplicar lógica de ranking
-    // ============================================================
-    const mapeados: PlatoMatch[] = (data ?? []).map((r: any) => ({
-      platillo_id: r.platillo_id,
-      nombre: r.nombre,
-      imagen_url: r.imagen_url ?? '',
-      tiempo_prep: r.tiempo_prep ?? '',
-      categoria_id: r.categoria_id ?? null,
-      ingredientes_totales: 0,
-      ingredientes_tiene: 0,
-      ingredientes_faltantes: 0,
-      porcentaje_match: Math.round(r.similarity * 100),
-    }));
-
-    const tieneIngredientes = filtros.incluir.length > 0 || filtros.excluir.length > 0;
-    const tieneAtributos = atributosIncluir.length > 0 || atributosExcluir.length > 0;
-    const pidioCategoria = atributosIncluir.some(a =>
-      ['entrada', 'sopa', 'plato_fondo', 'postre', 'bebida', 'desayuno'].includes(a)
-    );
-
-    console.log('🧭 Estrategia de ranking:');
-    console.log('  → tieneIngredientes:', tieneIngredientes);
-    console.log('  → tieneAtributos:   ', tieneAtributos);
-    console.log('  → pidioCategoria:   ', pidioCategoria);
-
-    // ============================================================
-    // CASO 1: Solo atributos (sin ingredientes)
-    //         → no confiar en la similitud semántica; reordenar por categoría
-    // ============================================================
-    if (tieneAtributos && !tieneIngredientes) {
-      const atributosDieteticos = [
-        'vegetariano', 'vegano', 'saludable', 'bajo_calorias',
-        'alto_proteina', 'sin_gluten', 'sin_lactosa', 'economico'
-      ];
-      const pidioDietetico = atributosIncluir.some(a => atributosDieteticos.includes(a));
-
-      console.log('🎯 Reordenando por categoría');
-      console.log('  → pidioCategoria:', pidioCategoria);
-      console.log('  → pidioDietetico:', pidioDietetico);
-
-      mapeados.sort((a, b) => {
-        const aCat = a.categoria_id ?? 99;
-        const bCat = b.categoria_id ?? 99;
-
-        // Si el usuario pidió una categoría explícita (postre, sopa, etc.)
-        // ordenamos solo por similitud.
-        if (pidioCategoria) {
-          return b.porcentaje_match - a.porcentaje_match;
-        }
-
-        // Si no, platos de fondo (cat 1) primero, luego el resto
-        const aPrio = aCat === 1 ? 0 : 1;
-        const bPrio = bCat === 1 ? 0 : 1;
-        if (aPrio !== bPrio) return aPrio - bPrio;
-        return b.porcentaje_match - a.porcentaje_match;
-      });
-
-      let recortados: PlatoMatch[];
-
-      if (pidioDietetico && !pidioCategoria) {
-        // Solo platos de fondo (evita postres/bebidas cuando pide "vegetariano")
-        recortados = mapeados
-          .filter(r => r.categoria_id === 1)
-          .slice(0, 12);
-        console.log(`🥬 Filtrando solo platos de fondo: ${recortados.length}`);
-      } else {
-        recortados = mapeados.slice(0, 12);
+      for (const it of itemsOrd) {
+        if (seleccionados.length >= maxPorCategoria) break;
+        if (it.porcentaje_match < umbralCat) break;
+        seleccionados.push(it);
       }
 
-      if (recortados.length > 0) {
-        console.table(recortados.map(r => ({
-          platillo_id: r.platillo_id,
-          nombre: r.nombre,
-          cat: r.categoria_id,
-          match: r.porcentaje_match + '%',
-        })));
-      }
-
-      console.groupEnd();
-      return recortados;
+      resultado.push(...seleccionados);
     }
 
-    // ============================================================
-    // CASO 2: Hay ingredientes → usar similitud con corte por gap
-    // ============================================================
-    console.log('✂️ Aplicando corte por gap de similitud');
-    const cortados = this.cortarPorGap(mapeados);
+    return resultado;
+  };
 
-    if (cortados.length > 0) {
-      console.table(cortados.map(r => ({
+  // ============================================================
+  // CASO 1: Solo atributos (sin ingredientes)
+  // ============================================================
+  if (tieneAtributos && !tieneIngredientes) {
+    const atributosDieteticos = [
+      'vegetariano', 'vegano', 'saludable', 'bajo_calorias',
+      'alto_proteina', 'sin_gluten', 'sin_lactosa', 'economico'
+    ];
+    const pidioDietetico = atributosIncluir.some(a => atributosDieteticos.includes(a));
+
+    console.log('🎯 Reordenando por categoría');
+    console.log('  → pidioCategoria:', pidioCategoria);
+    console.log('  → pidioDietetico:', pidioDietetico);
+
+    let base: PlatoMatch[];
+
+    if (pidioCategoria) {
+      // El usuario pidió una categoría explícita (postre, sopa, etc.)
+      base = [...mapeados].sort((a, b) => b.porcentaje_match - a.porcentaje_match);
+    } else {
+      // No hay categoría explícita: priorizar fondos → sopas → entradas → ...
+      base = ordenarPorCategoriaYSimilitud(mapeados);
+    }
+
+    let recortados: PlatoMatch[];
+
+    if (pidioDietetico && !pidioCategoria) {
+      // Solo platos de fondo
+      recortados = base.filter(r => r.categoria_id === 1).slice(0, 12);
+      console.log(`🥬 Filtrando solo platos de fondo: ${recortados.length}`);
+    } else if (pidioCategoria) {
+      recortados = base.slice(0, 12);
+    } else {
+      // Caso interesante: atributos como "picante", "económico" sin categoría.
+      // Usamos el corte por categoría para no truncar entradas/postres válidos.
+      recortados = cortarRespetandoCategorias(base, 78, 8, 5);
+      if (recortados.length === 0) recortados = base.slice(0, 12);
+    }
+
+    if (recortados.length > 0) {
+      console.table(recortados.map(r => ({
         platillo_id: r.platillo_id,
-        nombre: r.nombre,
-        match: r.porcentaje_match + '%',
+        nombre:      r.nombre,
+        cat:         r.categoria_id,
+        match:       r.porcentaje_match + '%',
       })));
     }
 
     console.groupEnd();
-    return cortados;
+    return recortados;
   }
+
+  // ============================================================
+  // CASO 2: Hay ingredientes → ordenar por categoría y aplicar
+  //         corte respetando grupos.
+  // ============================================================
+  console.log('✂️ Aplicando corte respetando categorías');
+
+  // 1) Ordenar por categoría + similitud
+  const ordenados = ordenarPorCategoriaYSimilitud(mapeados);
+
+  // 2) El corte es más permisivo cuando hay ingredientes concretos
+  //    porque la RPC YA hizo un filtro fuerte (p_incluir / p_excluir).
+  const umbralBlando = tieneIngredientes ? 70 : 78;
+  const gapMaxPorCategoria = tieneIngredientes ? 15 : 8;
+  const maxPorCategoria = tieneIngredientes ? 8 : 5;
+
+  console.log('  → umbralBlando:', umbralBlando);
+  console.log('  → gapMaxPorCategoria:', gapMaxPorCategoria);
+  console.log('  → maxPorCategoria:', maxPorCategoria);
+
+  const cortados = cortarRespetandoCategorias(
+    ordenados,
+    umbralBlando,
+    gapMaxPorCategoria,
+    maxPorCategoria
+  );
+
+  // 3) Si el corte fue muy agresivo (0 resultados) pero hay candidatos,
+  //    caer a la lista sin corte.
+  const final = cortados.length > 0 ? cortados : ordenados.slice(0, 15);
+
+  if (final.length > 0) {
+    console.table(final.map(r => ({
+      platillo_id: r.platillo_id,
+      nombre:      r.nombre,
+      cat:         r.categoria_id,
+      match:       r.porcentaje_match + '%',
+    })));
+  }
+
+  console.groupEnd();
+  return final;
+}  
 
 
 

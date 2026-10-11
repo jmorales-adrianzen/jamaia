@@ -2,9 +2,9 @@
 
 <div class="container">
 
-<div class="jama-header">
-  <h1 class="jama-h1">¿Qué vas a comer hoy o en la semana?</h1>
-</div>
+  <div class="jama-header">
+    <h1 class="jama-h1">¿Qué vas a comer hoy o en la semana?</h1>
+  </div>
 
   <!-- Selección de País -->
   <div class="country-group">
@@ -29,142 +29,163 @@
     </div>
   </div>
 
-<!-- Menú Semanal -->
-<div class="section-header">
-  <h2>📅 Menú Semanal</h2>
-  <button class="btn-random" (click)="seleccionarAleatorio()">🎲 Seleccionar Platos Aleatoriamente</button>
-</div>
+  <!-- Menú Semanal -->
+  <div class="section-header">
+    <h2>📅 Menú Semanal</h2>
+    <button class="btn-random" (click)="seleccionarAleatorio()">🎲 Seleccionar Platos Aleatoriamente</button>
+  </div>
 
-<div class="days-grid">
-  <div class="day-box" *ngFor="let dia of diasKeys; let idx = index">
-    <label [for]="'combo-' + dia">{{ dia | titlecase }}:</label>
+  <div class="days-grid">
+    <div class="day-box" *ngFor="let dia of diasKeys; let idx = index">
+      <label [for]="'combo-' + dia">{{ dia | titlecase }}:</label>
 
-    <div class="combobox" [class.abierto]="comboAbierto[dia]">
-      <!-- Input visible con rol ARIA de combobox -->
-      <input
-        type="text"
-        [id]="'combo-' + dia"
-        class="combobox-input"
-        role="combobox"
-        [attr.aria-expanded]="comboAbierto[dia]"
-        [attr.aria-controls]="'listbox-' + dia"
-        [attr.aria-activedescendant]="
-          indiceResaltado[dia] >= 0 ? 'opcion-' + dia + '-' + indiceResaltado[dia] : null
-        "
-        autocomplete="off"
-        [placeholder]="'Buscar plato...'"
-        [(ngModel)]="textoBusqueda[dia]"
-        (focus)="abrirCombo(dia)"
-        (input)="onBuscar(dia)"
-        (keydown)="onKeydownCombo($event, dia, idx)"
-      />
+      <div class="combobox" [class.abierto]="comboAbierto[dia]">
+        <input
+          type="text"
+          [id]="'combo-' + dia"
+          class="combobox-input"
+          role="combobox"
+          [attr.aria-expanded]="comboAbierto[dia]"
+          [attr.aria-controls]="'listbox-' + dia"
+          [attr.aria-activedescendant]="
+            indiceResaltado[dia] >= 0 ? 'opcion-' + dia + '-' + indiceResaltado[dia] : null
+          "
+          autocomplete="off"
+          [placeholder]="'Buscar plato...'"
+          [(ngModel)]="textoBusqueda[dia]"
+          (focus)="abrirCombo(dia)"
+          (input)="onBuscar(dia)"
+          (keydown)="onKeydownCombo($event, dia, idx)"
+        />
 
-      <span class="combobox-arrow" aria-hidden="true">▾</span>
+        <span class="combobox-arrow" aria-hidden="true">▾</span>
 
-      <!-- Lista flotante (no expande el layout) -->
-      <ul
-        class="combobox-lista"
-        role="listbox"
-        [id]="'listbox-' + dia"
-        *ngIf="comboAbierto[dia]"
-      >
-        <li
-          class="combobox-opcion combobox-opcion-vacia"
-          role="option"
-          [id]="'opcion-' + dia + '-0'"
-          [class.resaltado]="indiceResaltado[dia] === 0"
-          [class.seleccionado]="menuSemanal[dia] === null"
-          (mousedown)="seleccionarPlato(dia, null)"
-          (mouseenter)="indiceResaltado[dia] = 0">
-          — Ninguno / Descanso —
-        </li>
+        <ul
+          class="combobox-lista"
+          role="listbox"
+          [id]="'listbox-' + dia"
+          *ngIf="comboAbierto[dia]"
+        >
+          <li
+            class="combobox-opcion combobox-opcion-vacia"
+            role="option"
+            [id]="'opcion-' + dia + '-0'"
+            [class.resaltado]="indiceResaltado[dia] === 0"
+            [class.seleccionado]="menuSemanal[dia] === null"
+            (mousedown)="seleccionarPlato(dia, null)"
+            (mouseenter)="indiceResaltado[dia] = 0">
+            — Ninguno / Descanso —
+          </li>
 
-        <li
-          *ngFor="let p of filtrarPlatosPorTexto(textoBusqueda[dia]); let i = index"
-          class="combobox-opcion"
-          role="option"
-          [id]="'opcion-' + dia + '-' + (i + 1)"
-          [class.resaltado]="indiceResaltado[dia] === (i + 1)"
-          [class.seleccionado]="menuSemanal[dia] === p.platillo_id"
-          (mousedown)="seleccionarPlato(dia, p.platillo_id)"
-          (mouseenter)="indiceResaltado[dia] = (i + 1)">
-          {{ p.nombre }}
-        </li>
+          <li
+            *ngFor="let p of filtrarPlatosPorTexto(textoBusqueda[dia]); let i = index"
+            class="combobox-opcion"
+            role="option"
+            [id]="'opcion-' + dia + '-' + (i + 1)"
+            [class.resaltado]="indiceResaltado[dia] === (i + 1)"
+            [class.seleccionado]="menuSemanal[dia] === p.platillo_id"
+            (mousedown)="seleccionarPlato(dia, p.platillo_id)"
+            (mouseenter)="indiceResaltado[dia] = (i + 1)">
+            {{ p.nombre }}
+          </li>
 
-        <li
-          *ngIf="filtrarPlatosPorTexto(textoBusqueda[dia]).length === 0"
-          class="combobox-opcion combobox-sin-resultados"
-          role="presentation">
-          Sin resultados
-        </li>
-      </ul>
+          <li
+            *ngIf="filtrarPlatosPorTexto(textoBusqueda[dia]).length === 0"
+            class="combobox-opcion combobox-sin-resultados"
+            role="presentation">
+            Sin resultados
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
-</div>
 
-  <!-- Despensa -->
-  <h2>🥫 ¿Qué ingredientes YA tienes en tu despensa?</h2>
+  <!-- Despensa (colapsable) -->
+  <div class="despensa-wrapper" [class.colapsada]="!despensaAbierta">
 
-  <div class="despensa-toolbar">
-    <label class="select-all-box">
-      <input type="checkbox" id="selectAllCheckbox" [(ngModel)]="selectAllChecked" (change)="toggleSelectAll()">
-      <span>☑️ Marcar / Desmarcar todos</span>
-    </label>
-
-    <button type="button"
-            class="btn-toggle-categorias"
-            (click)="toggleExpandirTodas()">
-      {{ todasExpandidas ? '🔼 Colapsar todo' : '🔽 Expandir todo' }}
+    <button
+      type="button"
+      class="despensa-header"
+      (click)="toggleDespensa()"
+      [attr.aria-expanded]="despensaAbierta">
+      <span class="despensa-header-icon">🥫</span>
+      <span class="despensa-header-text">
+        ¿Qué ingredientes YA tienes en tu despensa?
+        <small class="despensa-header-hint">(opcional)</small>
+      </span>
+      <span class="despensa-header-arrow">
+        {{ despensaAbierta ? '▲' : '▼' }}
+      </span>
+      <span
+        class="despensa-header-count"
+        *ngIf="contarMarcadosDespensa() > 0"
+        title="Ingredientes marcados en la despensa">
+        {{ contarMarcadosDespensa() }} marcado{{ contarMarcadosDespensa() === 1 ? '' : 's' }}
+      </span>
     </button>
 
-    <input type="text"
-           class="filtro-despensa"
-           placeholder="🔍 Buscar ingrediente..."
-           [(ngModel)]="filtroDespensa"
-           (ngModelChange)="onFiltroChange()">
-  </div>
-
-  <div class="despensa-container">
-    <div class="categoria-bloque" *ngFor="let cat of categoriasDespensa">
-
-      <div class="categoria-header">
-        <span class="cat-arrow" (click)="toggleCategoria(cat)">
-          {{ cat.expandida ? '▼' : '▶' }}
-        </span>
-
-        <span class="cat-icon">{{ cat.icono }}</span>
-
-        <span class="cat-name" (click)="toggleCategoria(cat)">
-          {{ cat.nombre }}
-        </span>
-
-        <span class="cat-count">
-          {{ contarMarcadosCategoria(cat) }} / {{ cat.items.length }}
-        </span>
-
-        <label class="cat-check">
-          <input type="checkbox"
-                 [checked]="contarMarcadosCategoria(cat) === cat.items.length && cat.items.length > 0"
-                 (change)="toggleCategoriaCompleta(cat, $event)">
+    <div class="despensa-body" *ngIf="despensaAbierta">
+      <div class="despensa-toolbar">
+        <label class="select-all-box">
+          <input type="checkbox" id="selectAllCheckbox" [(ngModel)]="selectAllChecked" (change)="toggleSelectAll()">
+          <span>☑️ Marcar / Desmarcar todos</span>
         </label>
+
+        <button type="button"
+                class="btn-toggle-categorias"
+                (click)="toggleExpandirTodas()">
+          {{ todasExpandidas ? '🔼 Colapsar todo' : '🔽 Expandir todo' }}
+        </button>
+
+        <input type="text"
+               class="filtro-despensa"
+               placeholder="🔍 Buscar ingrediente..."
+               [(ngModel)]="filtroDespensa"
+               (ngModelChange)="onFiltroChange()">
       </div>
 
-      <div class="checkbox-grid" *ngIf="cat.expandida">
-        <label class="checkbox-card"
-               *ngFor="let ing of cat.items"
-               [style.display]="filtroDespensa && !ing.nombre.toLowerCase().includes(filtroDespensa.toLowerCase()) ? 'none' : 'flex'">
-          <input type="checkbox"
-                 class="despensa"
-                 [(ngModel)]="despensa[ing.id]"
-                 (change)="actualizarEstadoSelectAll()">
-          <span>{{ ing.nombre }}</span>
-        </label>
-      </div>
+      <div class="despensa-container">
+        <div class="categoria-bloque" *ngFor="let cat of categoriasDespensa">
+          <div class="categoria-header">
+            <span class="cat-arrow" (click)="toggleCategoria(cat)">
+              {{ cat.expandida ? '▼' : '▶' }}
+            </span>
 
+            <span class="cat-icon">{{ cat.icono }}</span>
+
+            <span class="cat-name" (click)="toggleCategoria(cat)">
+              {{ cat.nombre }}
+            </span>
+
+            <span class="cat-count">
+              {{ contarMarcadosCategoria(cat) }} / {{ cat.items.length }}
+            </span>
+
+            <label class="cat-check">
+              <input type="checkbox"
+                     [checked]="contarMarcadosCategoria(cat) === cat.items.length && cat.items.length > 0"
+                     (change)="toggleCategoriaCompleta(cat, $event)">
+            </label>
+          </div>
+
+          <div class="checkbox-grid" *ngIf="cat.expandida">
+            <label class="checkbox-card"
+                   *ngFor="let ing of cat.items"
+                   [style.display]="filtroDespensa && !ing.nombre.toLowerCase().includes(filtroDespensa.toLowerCase()) ? 'none' : 'flex'">
+              <input type="checkbox"
+                     class="despensa"
+                     [(ngModel)]="despensa[ing.id]"
+                     (change)="actualizarEstadoSelectAll()">
+              <span>{{ ing.nombre }}</span>
+            </label>
+          </div>
+        </div>
+      </div>
     </div>
+
   </div>
 
-  <button class="btn-submit" (click)="ejecutarGeneracion()">Generar Lista y Sugerencias</button>
+  <button class="btn-submit" (click)="ejecutarGeneracion()">🧑‍🍳 Calcula las compras y ¡a cocinar!</button>
 
   <div id="spinner" class="spinner-container" [style.display]="cargando ? 'block' : 'none'">
     <div class="spinner"></div>
@@ -188,14 +209,14 @@
     <button class="btn-export btn-whatsapp" (click)="abrirModalWhatsapp()">💬 Enviar por WhatsApp</button>
   </div>
 
-<app-enviar-whatsapp-modal
-  *ngIf="mostrarModalWhatsapp"
-  [compras]="comprasDetalladas"
-  [platos]="platosSeleccionados"
-  [personas]="personas"
-  [pais]="paisSeleccionado?.nombre ?? ''"
-  [simboloMoneda]="simboloMoneda"
-  (cerrar)="cerrarModalWhatsapp()">
-</app-enviar-whatsapp-modal>
+  <app-enviar-whatsapp-modal
+    *ngIf="mostrarModalWhatsapp"
+    [compras]="comprasDetalladas"
+    [platos]="platosSeleccionados"
+    [personas]="personas"
+    [pais]="paisSeleccionado?.nombre ?? ''"
+    [simboloMoneda]="simboloMoneda"
+    (cerrar)="cerrarModalWhatsapp()">
+  </app-enviar-whatsapp-modal>
 
 </div>
