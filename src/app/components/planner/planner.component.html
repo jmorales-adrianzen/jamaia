@@ -32,7 +32,114 @@
   <!-- Menú Semanal -->
   <div class="section-header">
     <h2>📅 Menú Semanal</h2>
-    <button class="btn-random" (click)="seleccionarAleatorio()">🎲 Seleccionar Platos Aleatoriamente</button>
+    <div class="random-actions">
+      <button class="btn-filter"
+              [class.active]="tieneFiltrosActivos()"
+              (click)="togglePanelFiltros()"
+              title="Filtros para selección aleatoria">
+        ⚙️
+        <span class="filter-badge" *ngIf="contarFiltrosActivos() > 0">
+          {{ contarFiltrosActivos() }}
+        </span>
+      </button>
+      <button class="btn-random" (click)="seleccionarAleatorio()">
+        🎲 Seleccionar Platos Aleatoriamente
+      </button>
+    </div>
+  </div>
+
+  <!-- Panel de filtros -->
+  <div class="filtros-panel" *ngIf="mostrarPanelFiltros">
+    <div class="filtros-header">
+      <strong>🔎 Filtrar selección aleatoria</strong>
+      <button class="btn-limpiar-filtros"
+              *ngIf="contarFiltrosActivos() > 0"
+              (click)="limpiarFiltros()">
+        Limpiar todo
+      </button>
+    </div>
+
+    <!-- Región culinaria -->
+    <div class="filtros-grupo">
+      <label class="filtros-label">📍 Región culinaria:</label>
+      <div class="filtros-chips">
+        <button class="chip" [class.active]="filtros.regionCulinaria === null"
+                (click)="setRegion(null)">Todas</button>
+        <button class="chip" [class.active]="filtros.regionCulinaria === 9"
+                (click)="setRegion(9)">🌊 Costa</button>
+        <button class="chip" [class.active]="filtros.regionCulinaria === 7"
+                (click)="setRegion(7)">🏔️ Sierra</button>
+        <button class="chip" [class.active]="filtros.regionCulinaria === 8"
+                (click)="setRegion(8)">🌴 Selva</button>
+      </div>
+    </div>
+
+    <!-- Tipo de plato -->
+    <div class="filtros-grupo">
+      <label class="filtros-label">🍽️ Tipo de plato:</label>
+      <div class="filtros-chips">
+        <button class="chip" [class.active]="filtros.tipoPlato === null"
+                (click)="setTipoPlato(null)">Todos</button>
+        <button class="chip" [class.active]="filtros.tipoPlato === 1"
+                (click)="setTipoPlato(1)">🍽️ Fondos</button>
+        <button class="chip" [class.active]="filtros.tipoPlato === 3"
+                (click)="setTipoPlato(3)">🍲 Sopas</button>
+        <button class="chip" [class.active]="filtros.tipoPlato === 4"
+                (click)="setTipoPlato(4)">🥗 Entradas</button>
+      </div>
+    </div>
+
+    <!-- Preferencias dietéticas -->
+    <div class="filtros-grupo">
+      <label class="filtros-label">🌱 Preferencias:</label>
+      <div class="filtros-chips">
+        <button class="chip"
+                [class.active]="filtros.atributosIncluir.includes('vegetariano')"
+                (click)="toggleAtributo('vegetariano')">🥬 Vegetariano</button>
+        <button class="chip"
+                [class.active]="filtros.atributosIncluir.includes('vegano')"
+                (click)="toggleAtributo('vegano')">🌱 Vegano</button>
+        <button class="chip"
+                [class.active]="filtros.atributosIncluir.includes('sin_gluten')"
+                (click)="toggleAtributo('sin_gluten')">🚫 Sin gluten</button>
+        <button class="chip"
+                [class.active]="filtros.atributosIncluir.includes('sin_lactosa')"
+                (click)="toggleAtributo('sin_lactosa')">🥛 Sin lactosa</button>
+        <button class="chip"
+                [class.active]="filtros.atributosIncluir.includes('saludable')"
+                (click)="toggleAtributo('saludable')">💚 Saludable</button>
+        <button class="chip"
+                [class.active]="filtros.atributosIncluir.includes('bajo_calorias')"
+                (click)="toggleAtributo('bajo_calorias')">🥗 Bajo en calorías</button>
+      </div>
+    </div>
+
+    <!-- Exclusiones -->
+    <div class="filtros-grupo">
+      <label class="filtros-label">⚠️ Excluir platos con:</label>
+      <div class="filtros-chips">
+        <button class="chip chip-danger"
+                [class.active]="filtros.exclusiones.includes('pescado')"
+                (click)="toggleExclusion('pescado')">🐟 Pescado</button>
+        <button class="chip chip-danger"
+                [class.active]="filtros.exclusiones.includes('mariscos')"
+                (click)="toggleExclusion('mariscos')">🦐 Mariscos</button>
+        <button class="chip chip-danger"
+                [class.active]="filtros.exclusiones.includes('carne_roja')"
+                (click)="toggleExclusion('carne_roja')">🥩 Carne roja</button>
+        <button class="chip chip-danger"
+                [class.active]="filtros.exclusiones.includes('pollo')"
+                (click)="toggleExclusion('pollo')">🐔 Pollo</button>
+      </div>
+    </div>
+
+    <!-- Contador -->
+    <div class="filtros-footer">
+      <span class="filtros-contador"
+            [class.sin-resultados]="contarPlatosFiltrados() === 0">
+        {{ contarPlatosFiltrados() }} plato{{ contarPlatosFiltrados() === 1 ? '' : 's' }} coinciden con los filtros
+      </span>
+    </div>
   </div>
 
   <div class="days-grid">
@@ -185,7 +292,19 @@
 
   </div>
 
-  <button class="btn-submit" (click)="ejecutarGeneracion()">🧑‍🍳 Calcula las compras y ¡a cocinar!</button>
+  <!-- Acciones principales: Generar + Reset -->
+  <div class="acciones-principales">
+    <button class="btn-submit" (click)="ejecutarGeneracion()">
+      🧑‍🍳 Calcula las compras y ¡a cocinar!
+    </button>
+
+    <button class="btn-reset"
+            *ngIf="hayAlgoQueLimpiar()"
+            (click)="limpiarTodo()"
+            title="Limpiar el menú semanal, la despensa y los resultados">
+      🔄 Empezar de nuevo
+    </button>
+  </div>
 
   <div id="spinner" class="spinner-container" [style.display]="cargando ? 'block' : 'none'">
     <div class="spinner"></div>

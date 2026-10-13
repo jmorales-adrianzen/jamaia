@@ -35,7 +35,7 @@ export class PlatoService {
         platillo_id,
         nombre,
         preparacion,
-        platillos!inner(imagen_url, tiempo_prep, categoria_id)
+        platillos!inner(imagen_url, tiempo_prep, categoria_id, region_culinaria_id )
       `)
       .eq('ubicacion_id', ubicacionId);
 
@@ -118,6 +118,23 @@ export class PlatoService {
       });
     }
 
+    const atributosRes = await this.sb.client
+      .from('platillo_atributos')
+      .select(`
+        platillo_id,
+        atributos!inner(codigo)
+      `)
+      .in('platillo_id', platilloIds);
+
+    if (atributosRes.error) throw atributosRes.error;
+
+    const atributosMap = new Map<number, string[]>();
+    for (const row of (atributosRes.data ?? []) as any[]) {
+      if (!atributosMap.has(row.platillo_id)) atributosMap.set(row.platillo_id, []);
+      const codigo = row.atributos?.codigo;
+      if (codigo) atributosMap.get(row.platillo_id)!.push(codigo);
+    }    
+
     // Armar resultado final
     return traducciones.map((t: any) => {
       const ings: IngredientePlato[] = (ingredientesRaw ?? [])
@@ -147,6 +164,8 @@ export class PlatoService {
         imagen_url: t.platillos?.imagen_url ?? '',
         tiempo_prep: t.platillos?.tiempo_prep ?? '',
         categoria_id: t.platillos?.categoria_id ?? null,
+        region_culinaria_id: t.platillos?.region_culinaria_id ?? null,
+        atributos: atributosMap.get(t.platillo_id) ?? [],        
         recomendacion: recomMap.get(t.platillo_id) ?? null,
         ingredientes: ings,
         acompanamientos: acompMap.get(t.platillo_id) ?? []
