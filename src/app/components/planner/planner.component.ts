@@ -89,6 +89,23 @@ export class PlannerComponent implements OnInit {
   // Categorías incluidas en los combos
   private readonly CATEGORIAS_COMBO = [1, 3, 4];
 
+  // ============================================================
+  // FILTROS PARA SELECCIÓN ALEATORIA
+  // ============================================================
+  mostrarPanelFiltros: boolean = false;
+
+  filtros: {
+    regionCulinaria: number | null;      // 7, 8, 9 o null
+    tipoPlato: number | null;             // 1, 2, 3, 4, 5, 6, 10 o null
+    atributosIncluir: string[];           // vegetariano, vegano, ...
+    exclusiones: string[];                // pescado, mariscos, carne_roja, pollo
+  } = {
+    regionCulinaria: null,
+    tipoPlato: null,
+    atributosIncluir: [],
+    exclusiones: []
+  };  
+
   constructor(
     private sanitizer: DomSanitizer,
     private ubicacionService: UbicacionService,
@@ -212,6 +229,16 @@ export class PlannerComponent implements OnInit {
       this.htmlSugerencias = '';
       this.comprasGlobales = {};
       this.costoTotalGlobal = 0;
+
+      this.filtros = {
+        regionCulinaria: null,
+        tipoPlato: null,
+        atributosIncluir: [],
+        exclusiones: []
+      };
+      this.mostrarPanelFiltros = false;      
+
+
     } catch (e: any) {
       console.error('Error al cargar platos', e);
       this.errorMensaje = 'No pudimos cargar los platos. Intenta recargar.';
@@ -244,6 +271,119 @@ export class PlannerComponent implements OnInit {
       cat.items.sort((a, b) => a.nombre.localeCompare(b.nombre))
     );
   }
+
+// ============================================================
+// PANEL DE FILTROS
+// ============================================================
+togglePanelFiltros(): void {
+  this.mostrarPanelFiltros = !this.mostrarPanelFiltros;
+}
+
+setRegion(regionId: number | null): void {
+  this.filtros.regionCulinaria =
+    this.filtros.regionCulinaria === regionId ? null : regionId;
+}
+
+setTipoPlato(tipoId: number | null): void {
+  this.filtros.tipoPlato =
+    this.filtros.tipoPlato === tipoId ? null : tipoId;
+}
+
+toggleAtributo(codigo: string): void {
+  const i = this.filtros.atributosIncluir.indexOf(codigo);
+  if (i >= 0) this.filtros.atributosIncluir.splice(i, 1);
+  else this.filtros.atributosIncluir.push(codigo);
+}
+
+toggleExclusion(exclusion: string): void {
+  const i = this.filtros.exclusiones.indexOf(exclusion);
+  if (i >= 0) this.filtros.exclusiones.splice(i, 1);
+  else this.filtros.exclusiones.push(exclusion);
+}
+
+limpiarFiltros(): void {
+  this.filtros = {
+    regionCulinaria: null,
+    tipoPlato: null,
+    atributosIncluir: [],
+    exclusiones: []
+  };
+}
+
+contarFiltrosActivos(): number {
+  let n = 0;
+  if (this.filtros.regionCulinaria !== null) n++;
+  if (this.filtros.tipoPlato !== null) n++;
+  n += this.filtros.atributosIncluir.length;
+  n += this.filtros.exclusiones.length;
+  return n;
+}
+
+tieneFiltrosActivos(): boolean {
+  return this.contarFiltrosActivos() > 0;
+}
+
+// ============================================================
+// FILTRADO PARA SELECCIÓN ALEATORIA
+// ============================================================
+private filtrarPlatosParaAleatorio(): PlatoCompleto[] {
+  // Palabras clave de exclusión → se buscan en el nombre de los ingredientes
+  const exclusionKeywords: { [k: string]: string[] } = {
+    'pescado': [
+      'pescado', 'bonito', 'merluza', 'doncella', 'trucha',
+      'filet', 'filete', 'pejerrey'
+    ],
+    'mariscos': [
+      'camaron', 'chorito', 'almeja', 'pulpo', 'concha',
+      'calamar', 'marisco', 'mejillon', 'ostion'
+    ],
+    'carne_roja': [
+      'carne', 'res', 'bistec', 'bife', 'lomo', 'cerdo',
+      'chancho', 'chuleta', 'cuy', 'cordero', 'vacuno'
+    ],
+    'pollo': [
+      'pollo', 'suprema', 'pechuga', 'gallina'
+    ]
+  };
+
+  const normalizar = (s: string) =>
+    s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  return this.platosCombos.filter(p => {
+    // 1. Región culinaria
+    if (this.filtros.regionCulinaria !== null &&
+        p.region_culinaria_id !== this.filtros.regionCulinaria) {
+      return false;
+    }
+
+    // 2. Tipo de plato
+    if (this.filtros.tipoPlato !== null &&
+        p.categoria_id !== this.filtros.tipoPlato) {
+      return false;
+    }
+
+    // 3. Atributos (todos deben estar presentes)
+    for (const codigo of this.filtros.atributosIncluir) {
+      if (!p.atributos.includes(codigo)) return false;
+    }
+
+    // 4. Exclusiones (por ingrediente)
+    for (const excl of this.filtros.exclusiones) {
+      const keywords = exclusionKeywords[excl] ?? [];
+      const tieneEsaCosa = p.ingredientes.some(ing =>
+        keywords.some(k => normalizar(ing.nombre).includes(k))
+      );
+      if (tieneEsaCosa) return false;
+    }
+
+    return true;
+  });
+}
+
+contarPlatosFiltrados(): number {
+  return this.filtrarPlatosParaAleatorio().length;
+}
+
 
   // ============================================================
   // COMBOBOX CON BUSCADOR Y NAVEGACIÓN POR TECLADO
@@ -458,24 +598,29 @@ export class PlannerComponent implements OnInit {
     this.selectAllChecked = valores.length > 0 && valores.every(v => v);
   }
 
-  seleccionarAleatorio(): void {
-    if (this.platosCombos.length === 0) return;
+seleccionarAleatorio(): void {
+  const pool = this.filtrarPlatosParaAleatorio();
 
-    const ids = this.platosCombos.map(p => p.platillo_id);
-    const mezcla = [...ids].sort(() => Math.random() - 0.5);
-
-    this.diasKeys.forEach((dia, i) => {
-      const id = mezcla[i] ?? null;
-      this.menuSemanal[dia] = id;
-
-      if (id !== null) {
-        const p = this.platoMap.get(id);
-        this.textoBusqueda[dia] = p ? p.nombre : '';
-      } else {
-        this.textoBusqueda[dia] = '';
-      }
-    });
+  if (pool.length === 0) {
+    alert('Ningún plato coincide con los filtros. Prueba quitar alguno.');
+    return;
   }
+
+  const ids = pool.map(p => p.platillo_id);
+  const mezcla = [...ids].sort(() => Math.random() - 0.5);
+
+  this.diasKeys.forEach((dia, i) => {
+    const id = mezcla[i] ?? null;
+    this.menuSemanal[dia] = id;
+
+    if (id !== null) {
+      const p = this.platoMap.get(id);
+      this.textoBusqueda[dia] = p ? p.nombre : '';
+    } else {
+      this.textoBusqueda[dia] = '';
+    }
+  });
+}
 
   get todasExpandidas(): boolean {
     return this.categoriasDespensa.length > 0 &&
@@ -656,6 +801,83 @@ export class PlannerComponent implements OnInit {
         </ol>
       </div>
     `).join('');
+  }
+
+
+  // ============================================================
+  // RESET TOTAL DE LA PANTALLA
+  // ============================================================
+  hayAlgoQueLimpiar(): boolean {
+    const hayMenu = this.diasKeys.some(d => this.menuSemanal[d] !== null);
+    const hayDespensa = this.contarMarcadosDespensa() > 0;
+    const hayFiltros = this.contarFiltrosActivos() > 0;
+    const hayResultados = this.mostrarResultado;
+
+    return hayMenu || hayDespensa || hayFiltros || hayResultados;
+  }
+
+  async limpiarTodo(): Promise<void> {
+    if (!this.hayAlgoQueLimpiar()) return;
+
+    // 1. Resetear menú semanal
+    this.menuSemanal = this.menuService.crearSemanaVacia();
+
+    // 2. Resetear texto de los combos
+    this.diasKeys.forEach(d => {
+      this.textoBusqueda[d] = '';
+      this.comboAbierto[d] = false;
+      this.indiceResaltado[d] = 0;
+    });
+
+    // 3. Resetear despensa
+    Object.keys(this.despensa).forEach(k => {
+      this.despensa[+k] = false;
+    });
+    this.selectAllChecked = false;
+    this.filtroDespensa = '';
+
+    // 4. Resetear filtros aleatorios
+    this.filtros = {
+      regionCulinaria: null,
+      tipoPlato: null,
+      atributosIncluir: [],
+      exclusiones: []
+    };
+    this.mostrarPanelFiltros = false;
+
+    // 5. Ocultar resultados
+    this.mostrarResultado = false;
+    this.htmlCompras = '';
+    this.htmlSugerencias = '';
+    this.comprasGlobales = {};
+    this.costoTotalGlobal = 0;
+    this.comprasDetalladas = [];
+    this.platosSeleccionados = [];
+
+    // 6. Cerrar modal y errores
+    this.mostrarModalWhatsapp = false;
+    this.errorMensaje = null;
+
+    // 7. Dejar la despensa colapsada
+    this.despensaAbierta = false;
+
+    // 8. Resetear país y personas a valores por defecto
+    const peru = this.paises.find(p => p.codigo_iso === 'PE') ?? this.paises[0];
+    const cambioDePais = peru && this.paisActual !== 'PE';
+    if (peru) {
+      this.paisSeleccionado = peru;
+      this.paisActual = peru.codigo_iso ?? 'PE';
+      this.simboloMoneda = this.paisActual === 'PE' ? 'S/' : '$';
+    }
+
+    this.personas = 4;
+
+    // Si cambió de país, recargar datos
+    if (cambioDePais) {
+      this.cargarDatosDelPais();
+    }
+
+    console.log('🔄 Pantalla reseteada');
   }
 
   // ============================================================
